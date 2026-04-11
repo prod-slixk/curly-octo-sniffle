@@ -94,7 +94,8 @@ export async function POST(req: NextRequest): Promise<NextResponse<ApiResponse>>
     const parsed = ContactSchema.safeParse(body)
 
     if (!parsed.success) {
-      const firstError = parsed.error.errors[0]?.message ?? 'Invalid form data.'
+    const firstError = parsed.error.issues[0]?.message ?? 'Invalid form data.'
+
       return NextResponse.json(
         { success: false, data: null, error: firstError },
         { status: 422 }

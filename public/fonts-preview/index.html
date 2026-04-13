@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Font Preview — Rollin' Munchies</title>
+  <style>
+    @font-face {
+      font-family: 'TheAugusta';
+      src: url('./The Augusta.otf') format('opentype');
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'MagicFunk';
+      src: url('./Magic Funk.ttf') format('truetype');
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Billd';
+      src: url('./BILLD___.TTF') format('truetype');
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'SoulWave';
+      src: url('./Soul Wave - (Demo) hanscostudio.com.ttf') format('truetype');
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'MagicSchool';
+      src: url('./MagicSchool-Regular.otf') format('opentype');
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'AbstractGroovy';
+      src: url('./aAbstractGroovy.ttf') format('truetype');
+      font-display: swap;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #141210;
+      color: #FEF3C7;
+      font-family: system-ui, sans-serif;
+      padding: 40px 24px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .warning {
+      border: 1px solid #DC2626;
+      border-left: 3px solid #DC2626;
+      color: #FCA5A5;
+      padding: 12px 16px;
+      font-size: 11px;
+      font-family: monospace;
+      letter-spacing: 0.08em;
+      margin-bottom: 48px;
+      background: rgba(220,38,38,0.06);
+    }
+    .warning strong { color: #F87171; display: block; margin-bottom: 4px; }
+
+    h1 {
+      font-family: monospace;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #F97316;
+      margin-bottom: 8px;
+    }
+    .subtitle {
+      font-family: monospace;
+      font-size: 10px;
+      color: #D4C5A960;
+      letter-spacing: 0.1em;
+      margin-bottom: 40px;
+    }
+
+    /* Section separator */
+    .section-label {
+      font-family: monospace;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #F9731660;
+      margin: 48px 0 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #2E2923;
+    }
+
+    .font-block {
+      border: 1px solid #2E2923;
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+    .font-block.winner {
+      border-color: #F97316;
+    }
+
+    .font-label {
+      background: #1C1917;
+      border-bottom: 1px solid #2E2923;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .font-label-name {
+      font-family: monospace;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #D4C5A9;
+    }
+    .tag {
+      font-family: monospace;
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      padding: 2px 8px;
+      border: 1px solid;
+    }
+    .tag.warn    { color: #F87171; border-color: rgba(220,38,38,0.4); background: rgba(220,38,38,0.06); }
+    .tag.unknown { color: #FBBF24; border-color: rgba(251,191,36,0.4); background: rgba(251,191,36,0.06); }
+    .tag.demo    { color: #FB923C; border-color: rgba(249,115,22,0.5); background: rgba(249,115,22,0.08); }
+    .tag.pick    { color: #34D399; border-color: rgba(52,211,153,0.5); background: rgba(52,211,153,0.08); }
+
+    .font-body {
+      padding: 32px 24px;
+      background: #242018;
+    }
+
+    .sample-xl  { font-size: clamp(3rem,  7vw, 5.5rem); line-height: 1;   margin-bottom: 14px; color: #FEF3C7; }
+    .sample-lg  { font-size: clamp(1.8rem, 4vw, 3rem);  line-height: 1.1; margin-bottom: 14px; color: #F97316; }
+    .sample-md  { font-size: clamp(1.2rem, 3vw, 2rem);  line-height: 1.2; color: #D4C5A9; }
+
+    .divider {
+      height: 1px;
+      background: linear-gradient(to right, transparent, #2E2923, transparent);
+      margin: 20px 0;
+    }
+
+    .context-strip {
+      padding: 14px 20px;
+      background: #141210;
+      border-top: 1px solid #2E2923;
+    }
+    .context-label {
+      font-family: monospace;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #D4C5A940;
+      margin-bottom: 10px;
+    }
+    .mock-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 20px;
+      background: rgba(20,18,16,0.85);
+      border: 1px solid rgba(46,41,35,0.6);
+    }
+    .mock-cta {
+      background: #F97316;
+      color: white;
+      font-family: monospace;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 7px 14px;
+    }
+    .mock-card {
+      display: inline-block;
+      margin-top: 10px;
+      border: 1px solid #2E2923;
+      background: #242018;
+      padding: 14px 18px;
+    }
+
+    /* MORTY VERDICT */
+    .verdict-block {
+      margin-top: 56px;
+      border: 1px solid #F97316;
+      border-left: 3px solid #F97316;
+      padding: 24px;
+      background: rgba(249,115,22,0.04);
+    }
+    .verdict-block h2 {
+      font-family: monospace;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #F97316;
+      margin-bottom: 20px;
+    }
+    .verdict-item {
+      margin-bottom: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #2E2923;
+    }
+    .verdict-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .verdict-item strong { color: #FEF3C7; font-family: monospace; font-size: 12px; letter-spacing: 0.08em; }
+    .verdict-item p { color: #D4C5A9; font-size: 13px; line-height: 1.6; margin-top: 4px; }
+    .verdict-item .rating {
+      display: inline-block;
+      font-family: monospace;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      padding: 2px 8px;
+      margin-top: 6px;
+    }
+    .rating.use   { color: #34D399; border: 1px solid rgba(52,211,153,0.4); }
+    .rating.skip  { color: #F87171; border: 1px solid rgba(248,113,113,0.4); }
+    .rating.maybe { color: #FBBF24; border: 1px solid rgba(251,191,36,0.4); }
+  </style>
+</head>
+<body>
+
+  <h1>◆ Font Candidates — Rollin' Munchies</h1>
+  <p class="subtitle">Local preview only · Do not deploy unlicensed fonts to production</p>
+
+  <div class="warning">
+    <strong>⚠ LICENSING REMINDER — READ BEFORE DEPLOYING</strong>
+    All fonts below are personal-use-only until you purchase a commercial license.
+    "Soul Wave" is explicitly a Demo version — limited glyph set, not production-ready regardless of license.
+    Verify BILLD, MagicSchool, and AbstractGroovy licensing independently before use on a live site.
+  </div>
+
+  <!-- ════════════════════════════════ BATCH 1 ════════════════════════════════ -->
+  <div class="section-label">Batch 01 — First round</div>
+
+  <!-- The Augusta -->
+  <div class="font-block">
+    <div class="font-label">
+      <span class="font-label-name">01 — The Augusta · Subectype Studio</span>
+      <span class="tag warn">Personal Use Only</span>
+    </div>
+    <div class="font-body">
+      <div class="sample-xl" style="font-family:'TheAugusta',cursive;">Rollin' Munchies</div>
+      <div class="sample-lg" style="font-family:'TheAugusta',cursive;">No Seats. Just Good Eats.</div>
+      <div class="divider"></div>
+      <div class="sample-md" style="font-family:'TheAugusta',cursive;">Jamaican Jack Burger · Hot Honey Dawg · Rollin' Fries</div>
+    </div>
+    <div class="context-strip">
+      <p class="context-label">Nav context</p>
+      <div class="mock-nav">
+        <span style="font-family:'TheAugusta',cursive; font-size:1.5rem; color:white;">Rollin' Munchies</span>
+        <span class="mock-cta">Call Us</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Magic Funk -->
+  <div class="font-block">
+    <div class="font-label">
+      <span class="font-label-name">02 — Magic Funk · Fontalicious</span>
+      <span class="tag warn">Personal Use Only</span>
+    </div>
+    <div class="font-body">
+      <div class="sample-xl" style="font-family:'MagicFunk',cursive;">Rollin' Munchies</div>
+      <div class="sample-lg" style="font-family:'MagicFunk',cursive;">No Seats. Just Good Eats.</div>
+      <div class="divider"></div>
+      <div class="sample-md" style="font-family:'MagicFunk',cursive;">Jamaican Jack Burger · Hot Honey Dawg · Rollin' Fries</div>
+    </div>
+    <div class="context-strip">
+      <p class="context-label">Nav context</p>
+      <div class="mock-nav">
+        <span style="font-family:'MagicFunk',cursive; font-size:1.5rem; color:white;">Rollin' Munchies</span>
+        <span class="mock-cta">Call Us</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- BILLD -->
+  <div class="font-block">
+    <div class="font-label">
+      <span class="font-label-name">03 — BILLD · Unknown Foundry</span>
+      <span class="tag unknown">License Unknown — Verify</span>
+    </div>
+    <div class="font-body">
+      <div class="sample-xl" style="font-family:'Billd',Impact,sans-serif; letter-spacing:0.04em;">Rollin' Munchies</div>
+      <div class="sample-lg" style="font-family:'Billd',Impact,sans-serif; letter-spacing:0.04em;">No Seats. Just Good Eats.</div>
+      <div class="divider"></div>
+      <div class="sample-md" style="font-family:'Billd',Impact,sans-serif;">Jamaican Jack · Hot Honey Dawg · Rollin' Fries</div>
+    </div>
+    <div class="context-strip">
+      <p class="context-label">Nav context</p>
+      <div class="mock-nav">
+        <span style="font-family:'Billd',Impact,sans-serif; font-size:1.8rem; color:white; letter-spacing:0.05em;">Rollin' Munchies</span>
+        <span class="mock-cta">Call Us</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════ BATCH 2 ════════════════════════════════ -->
+  <div class="section-label">Batch 02 — New round</div>
+
+  <!-- Soul Wave -->
+  <div class="font-block">
+    <div class="font-label">
+      <span class="font-label-name">04 — Soul Wave · Hans Co Studio</span>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <span class="tag demo">Demo Font</span>
+        <span class="tag warn">Personal Use Only</span>
+      </div>
+    </div>
+    <div class="font-body">
+      <div class="sample-xl" style="font-family:'SoulWave',cursive;">Rollin' Munchies</div>
+      <div class="sample-lg" style="font-family:'SoulWave',cursive;">No Seats. Just Good Eats.</div>
+      <div class="divider"></div>
+      <div class="sample-md" style="font-family:'SoulWave',cursive;">Jamaican Jack Burger · Hot Honey Dawg · Rollin' Fries</div>
+    </div>
+    <div class="context-strip">
+      <p class="context-label">Nav context · Note: Demo fonts often have missing glyphs — gaps below are expected</p>
+      <div class="mock-nav">
+        <span style="font-family:'SoulWave',cursive; font-size:1.5rem; color:white;">Rollin' Munchies</span>
+        <span class="mock-cta">Call Us</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MagicSchool -->
+  <div class="font-block">
+    <div class="font-label">
+      <span class="font-label-name">05 — Magic School · Regular</span>
+      <span class="tag unknown">License Unknown — Verify</span>
+    </div>
+    <div class="font-body">
+      <div class="sample-xl" style="font-family:'MagicSchool',cursive;">Rollin' Munchies</div>
+      <div class="sample-lg" style="font-family:'MagicSchool',cursive;">No Seats. Just Good Eats.</div>
+      <div class="divider"></div>
+      <div class="sample-md" style="font-family:'MagicSchool',cursive;">Jamaican Jack Burger · Hot Honey Dawg · Rollin' Fries</div>
+    </div>
+    <div class="context-strip">
+      <p class="context-label">Nav context</p>
+      <div class="mock-nav">
+        <span style="font-family:'MagicSchool',cursive; font-size:1.5rem; color:white;">Rollin' Munchies</span>
+        <span class="mock-cta">Call Us</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Abstract Groovy -->
+  <div class="font-block winner">
+    <div class="font-label">
+      <span class="font-label-name">06 — Abstract Groovy</span>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <span class="tag unknown">License Unknown — Verify</span>
+        <span class="tag pick">◆ MORTY Pick — See Verdict</span>
+      </div>
+    </div>
+    <div class="font-body">
+      <div class="sample-xl" style="font-family:'AbstractGroovy',sans-serif;">Rollin' Munchies</div>
+      <div class="sample-lg" style="font-family:'AbstractGroovy',sans-serif;">No Seats. Just Good Eats.</div>
+      <div class="divider"></div>
+      <div class="sample-md" style="font-family:'AbstractGroovy',sans-serif;">Jamaican Jack Burger · Hot Honey Dawg · Rollin' Fries</div>
+    </div>
+    <div class="context-strip">
+      <p class="context-label">Nav context</p>
+      <div class="mock-nav">
+        <span style="font-family:'AbstractGroovy',sans-serif; font-size:1.6rem; color:white;">Rollin' Munchies</span>
+        <span class="mock-cta">Call Us</span>
+      </div>
+      <p class="context-label" style="margin-top:12px;">Menu card context</p>
+      <div class="mock-card">
+        <div style="font-family:'AbstractGroovy',sans-serif; font-size:1.8rem; color:#F97316;">Jamaican Jack Burger</div>
+        <div style="font-family:system-ui,sans-serif; font-size:12px; color:#D4C5A9; margin-top:6px;">Bold Jamaican-spiced patty with all the fixins.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MORTY VERDICT -->
+  <div class="verdict-block">
+    <h2>◆ MORTY's Verdict — All 6 Fonts</h2>
+
+    <div class="verdict-item">
+      <strong>06 · Abstract Groovy</strong>
+      <p>MORTY's pick. "Groovy" in the name doesn't mean soft — geometric groovy fonts can hit hard. If it renders with bold, angular letterforms it will complement the Industrial/Raw direction without fighting it. The name suggests it has personality without being precious about it. This is the one I want to see on the hero headline and menu card names.</p>
+      <span class="rating use">◆ PURSUE LICENSE · USE FOR DISPLAY</span>
+    </div>
+
+    <div class="verdict-item">
+      <strong>05 · Magic School</strong>
+      <p>Wildcard. Could go anywhere depending on how it renders — if it's the Magic School Bus-inspired font it's playful and fun, which is actually on-brand for a food truck even in an industrial direction. Could work as an accent or secondary display font for badges and labels.</p>
+      <span class="rating maybe">◆ DEPENDS ON RENDER · VERIFY LICENSE</span>
+    </div>
+
+    <div class="verdict-item">
+      <strong>03 · BILLD</strong>
+      <p>The most industrially compatible of the first batch based on name alone — bold condensed display fonts are industrial by nature. Still needs license verification. Strong backup if AbstractGroovy doesn't land.</p>
+      <span class="rating maybe">◆ BACKUP PICK · VERIFY LICENSE FIRST</span>
+    </div>
+
+    <div class="verdict-item">
+      <strong>01 · The Augusta</strong>
+      <p>Beautiful script but fighting the aesthetic. Only works if Jay wants to use it exclusively as the wordmark/logo — not for any other display text.</p>
+      <span class="rating skip">◆ LOGO ONLY OR SKIP</span>
+    </div>
+
+    <div class="verdict-item">
+      <strong>02 · Magic Funk</strong>
+      <p>Fontalicious fonts trend playful and rounded. Likely too soft for the direction unless the render surprises.</p>
+      <span class="rating skip">◆ PROBABLY SKIP</span>
+    </div>
+
+    <div class="verdict-item">
+      <strong>04 · Soul Wave (Demo)</strong>
+      <p>Demo version. Missing glyph set means it can't be used in production regardless of aesthetic fit. If it renders beautifully, buy the full version from hanscostudio.com and reassess.</p>
+      <span class="rating skip">◆ DEMO ONLY · NOT PRODUCTION READY</span>
+    </div>
+  </div>
+
+</body>
+</html>

@@ -1,36 +1,47 @@
 'use client'
 
 import { useState } from 'react'
+import { motion } from 'framer-motion'
 import { SITE_CONFIG, SOCIAL_LINKS } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import type { ContactFormData, ContactFormState, WithClassName } from '@/types'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Contact.tsx
-// MORTY: Full contact section — form + social links + quick info strip.
-// All 4 form states handled: idle, loading, success, error.
-// TERRY HANDOFF → POST /api/v1/contact
+// MORTY: Full contact section — form + social + quick info.
+// All 4 form states: idle, loading, success, error.
+// Framer Motion scroll reveals. Industrial form fields — structural, no fluff.
 // ─────────────────────────────────────────────────────────────────────────────
 
-const INITIAL_FORM: ContactFormData = {
-  name:    '',
-  phone:   '',
-  email:   '',
-  message: '',
+const EASE_OUT = [0.25, 0.46, 0.45, 0.94] as const
+
+const revealUp = {
+  hidden: { opacity: 0, y: 16 },
+  show:   { opacity: 1, y: 0, transition: { duration: 0.55, ease: EASE_OUT } },
 }
 
-const INITIAL_STATE: ContactFormState = {
-  status:  'idle',
-  message: null,
+const revealLeft = {
+  hidden: { opacity: 0, x: -16 },
+  show:   { opacity: 1, x: 0, transition: { duration: 0.55, ease: EASE_OUT } },
 }
+
+const revealRight = {
+  hidden: { opacity: 0, x: 16 },
+  show:   { opacity: 1, x: 0, transition: { duration: 0.55, ease: EASE_OUT, delay: 0.1 } },
+}
+
+// ─── State Defaults ───────────────────────────────────────────────────────────
+
+const INITIAL_FORM: ContactFormData = { name: '', phone: '', email: '', message: '' }
+const INITIAL_STATE: ContactFormState = { status: 'idle', message: null }
+
+// ─── Component ────────────────────────────────────────────────────────────────
 
 export function Contact({ className }: WithClassName) {
   const [form,      setForm]      = useState<ContactFormData>(INITIAL_FORM)
   const [formState, setFormState] = useState<ContactFormState>(INITIAL_STATE)
 
-  function handleChange(
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) {
+  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     const { name, value } = e.target
     setForm(prev => ({ ...prev, [name]: value }))
   }
@@ -38,7 +49,6 @@ export function Contact({ className }: WithClassName) {
   async function handleSubmit(e: React.MouseEvent<HTMLButtonElement>) {
     e.preventDefault()
 
-    // Basic client-side guard — TERRY validates server-side too
     if (!form.name.trim() || !form.email.trim() || !form.message.trim()) {
       setFormState({ status: 'error', message: 'Please fill in all required fields.' })
       return
@@ -47,33 +57,22 @@ export function Contact({ className }: WithClassName) {
     setFormState({ status: 'loading', message: null })
 
     try {
-      const res = await fetch('/api/v1/contact', {
+      const res  = await fetch('/api/v1/contact', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify(form),
       })
-
       const data = await res.json()
 
       if (!res.ok || !data.success) {
-        setFormState({
-          status:  'error',
-          message: data.error ?? 'Something went wrong. Try calling us directly.',
-        })
+        setFormState({ status: 'error', message: data.error ?? 'Something went wrong. Try calling us directly.' })
         return
       }
 
-      setFormState({
-        status:  'success',
-        message: "Message sent! We'll get back to you soon.",
-      })
+      setFormState({ status: 'success', message: "Message sent! We'll get back to you soon." })
       setForm(INITIAL_FORM)
-
     } catch {
-      setFormState({
-        status:  'error',
-        message: 'Network error. Try calling us at ' + SITE_CONFIG.phone,
-      })
+      setFormState({ status: 'error', message: 'Network error. Try calling us at ' + SITE_CONFIG.phone })
     }
   }
 
@@ -89,43 +88,64 @@ export function Contact({ className }: WithClassName) {
         className
       )}
     >
+      {/* Structural top accent */}
+      <div
+        aria-hidden="true"
+        className="absolute top-0 left-0 right-0 h-px
+                   bg-gradient-to-r from-transparent via-brand-charcoal-border to-transparent"
+      />
+
       <div className="max-w-5xl mx-auto">
 
         {/* — Section header — */}
-        <div className="mb-12">
-          <p className="font-mono text-xs tracking-widest text-brand-orange uppercase mb-3">
-            ✦ Hit Us Up
+        <motion.div
+          variants={revealUp}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: '-80px' }}
+          className="mb-12"
+        >
+          <p className="font-mono text-xs tracking-widest text-brand-orange uppercase mb-3 flex items-center gap-2">
+            <span aria-hidden="true" className="text-brand-orange/50">◆</span>
+            Hit Us Up
           </p>
-          <h2
-            className="font-display text-display-xl text-white leading-none"
-            style={{ fontFamily: '"Bebas Neue", Impact, sans-serif' }}
-          >
+          <h2 className="font-display text-display-xl text-white leading-none">
             Get In Touch
           </h2>
-          <p className="mt-3 font-body text-brand-cream-dim text-base max-w-md">
-            Questions, catering inquiries, or just want to say what's good — we're listening.
-          </p>
-        </div>
+          <div className="mt-3 flex items-center gap-3">
+            <div className="h-px w-8 bg-brand-orange/40" aria-hidden="true" />
+            <p className="font-body text-brand-cream-dim text-base max-w-md">
+              Questions, catering inquiries, or just want to say what&apos;s good — we&apos;re listening.
+            </p>
+          </div>
+        </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-10">
 
           {/* — Form — 3/5 width on desktop — */}
-          <div className="lg:col-span-3">
+          <motion.div
+            variants={revealLeft}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: '-60px' }}
+            className="lg:col-span-3"
+          >
             {isSuccess ? (
               // ─── Success state ───────────────────────────────────────────
-              <div className="flex flex-col items-center justify-center text-center
-                              py-16 px-8 bg-brand-charcoal-card border border-green-500/20
-                              rounded-card animate-fade-in">
-                <div className="w-14 h-14 rounded-full bg-green-500/10 border border-green-500/30
+              <motion.div
+                initial={{ opacity: 0, scale: 0.97 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.4 }}
+                className="flex flex-col items-center justify-center text-center
+                            py-16 px-8 bg-brand-charcoal-card border border-green-500/20"
+              >
+                <div className="w-14 h-14 bg-green-500/10 border border-green-500/30
                                 flex items-center justify-center mb-5 text-2xl"
                   aria-hidden="true"
                 >
                   ✓
                 </div>
-                <h3
-                  className="font-display text-2xl text-white mb-2"
-                  style={{ fontFamily: '"Bebas Neue", Impact, sans-serif' }}
-                >
+                <h3 className="font-display text-2xl text-white mb-2 tracking-wide">
                   Message Sent
                 </h3>
                 <p className="font-body text-sm text-brand-cream-dim mb-6">
@@ -134,7 +154,7 @@ export function Contact({ className }: WithClassName) {
                 <button
                   onClick={() => setFormState(INITIAL_STATE)}
                   className={cn(
-                    'font-body text-sm font-medium px-6 py-2 rounded-chip',
+                    'font-mono text-xs tracking-wider uppercase px-6 py-2',
                     'border border-brand-charcoal-border text-brand-cream-dim',
                     'hover:border-brand-orange/40 hover:text-brand-cream',
                     'transition-all duration-200',
@@ -143,13 +163,14 @@ export function Contact({ className }: WithClassName) {
                 >
                   Send Another
                 </button>
-              </div>
+              </motion.div>
             ) : (
               // ─── Form — idle / loading / error ───────────────────────────
-              <div className="bg-brand-charcoal-card border border-brand-charcoal-border rounded-card p-6 md:p-8">
+              <div className="bg-brand-charcoal-card border border-brand-charcoal-border p-6 md:p-8">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                   <FormField
                     label="Name"
+                    fieldId="FIELD-01"
                     required
                     id="name"
                     name="name"
@@ -162,6 +183,7 @@ export function Contact({ className }: WithClassName) {
                   />
                   <FormField
                     label="Phone"
+                    fieldId="FIELD-02"
                     id="phone"
                     name="phone"
                     type="tel"
@@ -176,6 +198,7 @@ export function Contact({ className }: WithClassName) {
                 <div className="mb-4">
                   <FormField
                     label="Email"
+                    fieldId="FIELD-03"
                     required
                     id="email"
                     name="email"
@@ -191,9 +214,12 @@ export function Contact({ className }: WithClassName) {
                 <div className="mb-6">
                   <label
                     htmlFor="message"
-                    className="block font-mono text-xs tracking-wider text-brand-cream-dim uppercase mb-2"
+                    className="flex items-center justify-between font-mono text-xs tracking-widest text-brand-cream-dim/60 uppercase mb-2"
                   >
-                    Message <span className="text-brand-orange" aria-hidden="true">*</span>
+                    <span>
+                      Message <span className="text-brand-orange" aria-hidden="true">*</span>
+                    </span>
+                    <span className="text-brand-cream-dim/30" aria-hidden="true">FIELD-04</span>
                   </label>
                   <textarea
                     id="message"
@@ -206,9 +232,9 @@ export function Contact({ className }: WithClassName) {
                     disabled={isLoading}
                     aria-required="true"
                     className={cn(
-                      'w-full px-4 py-3 rounded-chip resize-none',
+                      'w-full px-4 py-3 resize-none',
                       'bg-brand-charcoal border border-brand-charcoal-border',
-                      'font-body text-sm text-brand-cream placeholder:text-brand-cream-dim/40',
+                      'font-body text-sm text-brand-cream placeholder:text-brand-cream-dim/30',
                       'focus:outline-none focus:border-brand-orange/50 focus:ring-1 focus:ring-brand-orange/30',
                       'transition-colors duration-150',
                       'disabled:opacity-50 disabled:cursor-not-allowed'
@@ -218,24 +244,26 @@ export function Contact({ className }: WithClassName) {
 
                 {/* Error message */}
                 {formState.status === 'error' && formState.message && (
-                  <div
-                    className="mb-4 px-4 py-3 rounded-chip bg-red-500/10 border border-red-500/20
+                  <motion.div
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mb-4 px-4 py-3 bg-red-500/10 border border-red-500/20
                                font-body text-sm text-red-400"
                     role="alert"
                     aria-live="polite"
                   >
                     {formState.message}
-                  </div>
+                  </motion.div>
                 )}
 
-                {/* Submit button */}
+                {/* Submit */}
                 <button
                   onClick={handleSubmit}
                   disabled={isLoading}
                   className={cn(
                     'w-full flex items-center justify-center gap-2',
-                    'px-6 py-3.5 rounded-chip',
-                    'font-body font-semibold text-base',
+                    'px-6 py-3.5',
+                    'font-mono font-semibold text-sm tracking-widest uppercase',
                     'bg-brand-orange text-white',
                     'hover:bg-brand-orange-light active:bg-brand-orange-dark',
                     'shadow-glow-sm hover:shadow-glow-orange',
@@ -253,36 +281,38 @@ export function Contact({ className }: WithClassName) {
                       Sending...
                     </>
                   ) : (
-                    'Send Message'
+                    'Send Message →'
                   )}
                 </button>
               </div>
             )}
-          </div>
+          </motion.div>
 
           {/* — Right sidebar — 2/5 width on desktop — */}
-          <div className="lg:col-span-2 flex flex-col gap-5">
-
-            {/* Quick contact */}
-            <div className="bg-brand-charcoal-card border border-brand-charcoal-border rounded-card p-5">
+          <motion.div
+            variants={revealRight}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: '-60px' }}
+            className="lg:col-span-2 flex flex-col gap-5"
+          >
+            {/* Direct contact */}
+            <div className="bg-brand-charcoal-card border border-brand-charcoal-border p-5">
               <p className="font-mono text-xs tracking-widest text-brand-orange uppercase mb-4">
-                Direct Contact
+                ◆ Direct Contact
               </p>
               <div className="flex flex-col gap-4">
                 <a
                   href={`tel:${SITE_CONFIG.phone.replace(/\D/g, '')}`}
                   className="flex items-center gap-3 group"
                 >
-                  <div className="w-9 h-9 rounded-chip bg-brand-orange/10 border border-brand-orange/20
+                  <div className="w-9 h-9 bg-brand-orange/10 border border-brand-orange/20
                                   flex items-center justify-center flex-shrink-0 text-brand-orange">
                     <PhoneIcon />
                   </div>
                   <div>
-                    <p className="font-mono text-xs text-brand-cream-dim/60 uppercase tracking-wider">
-                      Call Us
-                    </p>
-                    <p className="font-body text-sm font-medium text-brand-cream
-                                  group-hover:text-brand-orange transition-colors">
+                    <p className="font-mono text-xs text-brand-cream-dim/50 uppercase tracking-widest">Call Us</p>
+                    <p className="font-mono text-sm font-medium text-brand-cream group-hover:text-brand-orange transition-colors tracking-wide">
                       {SITE_CONFIG.phone}
                     </p>
                   </div>
@@ -292,16 +322,13 @@ export function Contact({ className }: WithClassName) {
                   href={`mailto:${SITE_CONFIG.email}`}
                   className="flex items-center gap-3 group"
                 >
-                  <div className="w-9 h-9 rounded-chip bg-brand-charcoal border border-brand-charcoal-border
+                  <div className="w-9 h-9 bg-brand-charcoal border border-brand-charcoal-border
                                   flex items-center justify-center flex-shrink-0 text-brand-cream-dim">
                     <MailIcon />
                   </div>
                   <div className="min-w-0">
-                    <p className="font-mono text-xs text-brand-cream-dim/60 uppercase tracking-wider">
-                      Email
-                    </p>
-                    <p className="font-body text-sm text-brand-cream-dim truncate
-                                  group-hover:text-brand-cream transition-colors">
+                    <p className="font-mono text-xs text-brand-cream-dim/50 uppercase tracking-widest">Email</p>
+                    <p className="font-body text-sm text-brand-cream-dim truncate group-hover:text-brand-cream transition-colors">
                       {SITE_CONFIG.email}
                     </p>
                   </div>
@@ -310,9 +337,9 @@ export function Contact({ className }: WithClassName) {
             </div>
 
             {/* Social links */}
-            <div className="bg-brand-charcoal-card border border-brand-charcoal-border rounded-card p-5">
+            <div className="bg-brand-charcoal-card border border-brand-charcoal-border p-5">
               <p className="font-mono text-xs tracking-widest text-brand-orange uppercase mb-4">
-                Follow The Truck
+                ◆ Follow The Truck
               </p>
               <div className="flex flex-col gap-3">
                 {SOCIAL_LINKS.map(link => (
@@ -324,14 +351,13 @@ export function Contact({ className }: WithClassName) {
                     className="flex items-center gap-3 group"
                     aria-label={`Follow us on ${link.platform}`}
                   >
-                    <div className="w-9 h-9 rounded-chip bg-brand-charcoal border border-brand-charcoal-border
+                    <div className="w-9 h-9 bg-brand-charcoal border border-brand-charcoal-border
                                     flex items-center justify-center flex-shrink-0
                                     group-hover:border-brand-orange/30 transition-colors">
                       <SocialIcon platform={link.icon} />
                     </div>
                     <div>
-                      <p className="font-body text-sm font-medium text-brand-cream-dim
-                                    group-hover:text-brand-cream transition-colors">
+                      <p className="font-mono text-sm font-medium text-brand-cream-dim group-hover:text-brand-cream transition-colors tracking-wide">
                         {link.platform}
                       </p>
                       <p className="font-mono text-xs text-brand-cream-dim/40">
@@ -343,25 +369,19 @@ export function Contact({ className }: WithClassName) {
               </div>
             </div>
 
-            {/* Tagline card */}
-            <div className="bg-brand-orange/5 border border-brand-orange/15 rounded-card p-5 text-center">
-              <p
-                className="font-display text-2xl text-brand-orange"
-                style={{ fontFamily: '"Bebas Neue", Impact, sans-serif' }}
-              >
+            {/* Tagline plate */}
+            <div className="bg-brand-orange/5 border border-brand-orange/15 p-5 text-center">
+              <p className="font-display text-2xl text-brand-orange tracking-wide">
                 No Seats.
               </p>
-              <p
-                className="font-display text-2xl text-white"
-                style={{ fontFamily: '"Bebas Neue", Impact, sans-serif' }}
-              >
+              <p className="font-display text-2xl text-white tracking-wide">
                 Just Good Eats.
               </p>
-              <p className="font-mono text-xs text-brand-cream-dim/50 mt-2 tracking-widest">
+              <p className="font-mono text-xs text-brand-cream-dim/40 mt-2 tracking-widest">
                 EST. TARBORO NC · 2020
               </p>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>
@@ -372,6 +392,7 @@ export function Contact({ className }: WithClassName) {
 
 interface FormFieldProps {
   label:        string
+  fieldId:      string
   id:           string
   name:         string
   type:         string
@@ -384,19 +405,20 @@ interface FormFieldProps {
 }
 
 function FormField({
-  label, id, name, type, placeholder,
+  label, fieldId, id, name, type, placeholder,
   value, onChange, disabled, required, autoComplete
 }: FormFieldProps) {
   return (
     <div>
       <label
         htmlFor={id}
-        className="block font-mono text-xs tracking-wider text-brand-cream-dim uppercase mb-2"
+        className="flex items-center justify-between font-mono text-xs tracking-widest text-brand-cream-dim/60 uppercase mb-2"
       >
-        {label}
-        {required && (
-          <span className="text-brand-orange ml-1" aria-hidden="true">*</span>
-        )}
+        <span>
+          {label}
+          {required && <span className="text-brand-orange ml-1" aria-hidden="true">*</span>}
+        </span>
+        <span className="text-brand-cream-dim/25" aria-hidden="true">{fieldId}</span>
       </label>
       <input
         id={id}
@@ -410,9 +432,9 @@ function FormField({
         autoComplete={autoComplete}
         aria-required={required}
         className={cn(
-          'w-full px-4 py-3 rounded-chip',
+          'w-full px-4 py-3',
           'bg-brand-charcoal border border-brand-charcoal-border',
-          'font-body text-sm text-brand-cream placeholder:text-brand-cream-dim/40',
+          'font-body text-sm text-brand-cream placeholder:text-brand-cream-dim/30',
           'focus:outline-none focus:border-brand-orange/50 focus:ring-1 focus:ring-brand-orange/30',
           'transition-colors duration-150',
           'disabled:opacity-50 disabled:cursor-not-allowed'
@@ -426,14 +448,9 @@ function FormField({
 
 function SpinnerIcon({ className }: WithClassName) {
   return (
-    <svg
-      className={cn('w-4 h-4 animate-spin', className)}
-      fill="none" viewBox="0 0 24 24"
-      aria-hidden="true"
-    >
+    <svg className={cn('w-4 h-4 animate-spin', className)} fill="none" viewBox="0 0 24 24" aria-hidden="true">
       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-      <path className="opacity-75" fill="currentColor"
-        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
     </svg>
   )
 }

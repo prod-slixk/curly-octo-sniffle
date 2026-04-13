@@ -1,45 +1,109 @@
 @import "tailwindcss";
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   Design Tokens — Tailwind v4 @theme
+   All tokens auto-register as utilities via their namespace prefix.
+   ───────────────────────────────────────────────────────────────────────────── */
+
 @theme {
-  --color-brand-orange: #F97316;
-  --color-brand-orange-light: #FB923C;
-  --color-brand-orange-dark: #EA580C;
-  --color-brand-cream: #FEF3C7;
-  --color-brand-cream-dim: #D4C5A9;
-  --color-brand-charcoal: #141210;
+  /* — Colors — */
+  --color-brand-orange:         #F97316;
+  --color-brand-orange-light:   #FB923C;
+  --color-brand-orange-dark:    #EA580C;
+  --color-brand-cream:          #FEF3C7;
+  --color-brand-cream-dim:      #D4C5A9;
+  --color-brand-charcoal:       #141210;
   --color-brand-charcoal-surface: #1C1917;
-  --color-brand-charcoal-card: #242018;
+  --color-brand-charcoal-card:  #242018;
   --color-brand-charcoal-border: #2E2923;
-  --color-brand-heat: #DC2626;
-  --radius-card: 1rem;
-  --radius-chip: 0.375rem;
-  --shadow-glow-orange: 0 0 24px rgba(249,115,22,0.25);
-  --shadow-glow-sm: 0 0 12px rgba(249,115,22,0.2);
-  --shadow-card: 0 4px 24px rgba(0,0,0,0.4);
+  --color-brand-heat:           #DC2626;
+
+  /* — Industrial radius — sharper corners, less soft, more mechanical — */
+  --radius-card: 0.25rem;
+  --radius-chip: 0rem;
+
+  /* — Shadows — */
+  --shadow-glow-orange: 0 0 24px rgba(249, 115, 22, 0.25);
+  --shadow-glow-sm:     0 0 12px rgba(249, 115, 22, 0.20);
+  --shadow-card:        0 4px 24px rgba(0, 0, 0, 0.4);
+  --shadow-card-hover:  0 8px 32px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(249, 115, 22, 0.22);
 }
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   Custom Utilities — everything that can't live in @theme
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* Display typography — fluid clamp sizes */
+@utility text-display-2xl {
+  font-size: clamp(3.5rem, 8vw, 7rem);
+  line-height: 1;
+  letter-spacing: 0.025em;
+}
+
+@utility text-display-xl {
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  line-height: 1;
+}
+
+@utility text-display-md {
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  line-height: 1;
+}
+
+/* Noise texture overlay — grain for industrial depth */
+@utility bg-noise {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 200px 200px;
+}
+
+/* Ambient orange glow — heat rising from below */
+@utility bg-brand-orange-glow {
+  background: radial-gradient(ellipse 70% 50% at 50% 100%, rgba(249, 115, 22, 0.35) 0%, transparent 70%);
+}
+
+/* Industrial dot grid — structural background texture */
+@utility bg-grid-dots {
+  background-image: radial-gradient(circle, rgba(254, 243, 199, 0.06) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* Nav blur — glass plate on charcoal */
+@utility backdrop-blur-nav {
+  backdrop-filter: blur(12px) saturate(1.4);
+  -webkit-backdrop-filter: blur(12px) saturate(1.4);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Keyframes
+   ───────────────────────────────────────────────────────────────────────────── */
+
 @keyframes fade-up {
-  from { opacity: 0; transform: translateY(24px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes fade-in {
   from { opacity: 0; }
-  to { opacity: 1; }
+  to   { opacity: 1; }
 }
 
 @keyframes ticker {
   from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
+  to   { transform: translateX(-50%); }
 }
 
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 12px rgba(249,115,22,0.2); }
-  50% { box-shadow: 0 0 28px rgba(249,115,22,0.5); }
+  0%,  100% { box-shadow: 0 0 8px rgba(249, 115, 22, 0.2); }
+  50%        { box-shadow: 0 0 24px rgba(249, 115, 22, 0.5); }
 }
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   Base Layer
+   ───────────────────────────────────────────────────────────────────────────── */
+
 @layer base {
-  * {
+  *, *::before, *::after {
     box-sizing: border-box;
     padding: 0;
     margin: 0;
@@ -52,25 +116,23 @@
   body {
     background-color: #141210;
     color: #FEF3C7;
-    font-family: "Inter", system-ui, sans-serif;
+    font-family: var(--font-inter), system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
-  h1 {
-    font-family: "Bebas Neue", Impact, sans-serif;
-  }
-
-  .font-display {
-    font-family: "Bebas Neue", Impact, sans-serif;
+  /* Use the Next.js loaded font variable — fixes the bug */
+  h1, .font-display {
+    font-family: var(--font-bebas-neue), "Bebas Neue", Impact, sans-serif;
   }
 
   .font-body {
-    font-family: "Inter", system-ui, sans-serif;
+    font-family: var(--font-inter), system-ui, sans-serif;
   }
 
+  /* CSS animation classes — used for elements that don't need scroll-trigger */
   .animate-fade-up {
-    animation: fade-up 0.6s ease forwards;
+    animation: fade-up 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
   }
 
   .animate-fade-in {
@@ -82,9 +144,10 @@
   }
 
   .animate-pulse-glow {
-    animation: pulse-glow 2s ease-in-out infinite;
+    animation: pulse-glow 2.5s ease-in-out infinite;
   }
 
+  /* Accessibility — always respect reduced motion */
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
       animation-duration: 0.01ms !important;

@@ -1,52 +1,61 @@
 'use client'
 
+import { motion } from 'framer-motion'
 import { SITE_CONFIG, SOCIAL_LINKS, NAV_LINKS } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Footer.tsx
-// MORTY: Clean dark footer. Logo + tagline left, nav center, social right.
-// Copyright strip at bottom. Mobile stacks to single column.
+// MORTY: Industrial structural footer.
+// Three-column grid with ruled dividers. Stacked on mobile.
+// Orange top rail with heat glow. Stamped copyright strip.
 // ─────────────────────────────────────────────────────────────────────────────
+
+const EASE_OUT = [0.25, 0.46, 0.45, 0.94] as const
 
 export function Footer() {
   const year = new Date().getFullYear()
 
   return (
     <footer
-      className="relative w-full bg-brand-charcoal border-t border-brand-charcoal-border"
+      className="relative w-full bg-brand-charcoal border-t-2 border-brand-charcoal-border"
       aria-label="Site footer"
     >
-      {/* — Orange top accent line — */}
+      {/* — Orange heat rail — */}
       <div
         aria-hidden="true"
-        className="absolute top-0 left-0 right-0 h-px
-                   bg-gradient-to-r from-transparent via-brand-orange/40 to-transparent"
+        className="absolute top-0 left-0 right-0 h-[2px]
+                   bg-gradient-to-r from-brand-orange/0 via-brand-orange to-brand-orange/0"
       />
 
-      {/* — Main footer content — */}
-      <div className="max-w-5xl mx-auto px-6 md:px-12 py-14">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-6">
+      {/* — Footer content — */}
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-40px' }}
+        transition={{ duration: 0.55, ease: EASE_OUT }}
+        className="max-w-5xl mx-auto px-6 md:px-12 py-14"
+      >
+        <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-brand-charcoal-border">
 
           {/* — Col 1: Brand — */}
-          <div className="flex flex-col items-center text-center gap-4">
+          <div className="flex flex-col items-center text-center gap-4 pb-10 md:pb-0 md:pr-8">
             <a
               href="#home"
               className="font-display text-2xl text-white tracking-wider
                          hover:text-brand-orange transition-colors duration-200
                          focus-visible:outline-none focus-visible:ring-2
-                         focus-visible:ring-brand-orange rounded-sm"
-              style={{ fontFamily: '"Bebas Neue", Impact, sans-serif' }}
+                         focus-visible:ring-brand-orange"
               aria-label="Rollin' Munchies — back to top"
             >
-              Rollin' Munchies
+              Rollin&apos; Munchies
             </a>
-            <p className="font-mono text-xs text-brand-cream-dim/60 tracking-widest uppercase leading-relaxed">
+            <p className="font-mono text-xs text-brand-cream-dim/50 tracking-widest uppercase leading-relaxed">
               No Seats. Just Good Eats.<br />
               Tarboro, NC · Est. 2020
             </p>
             {/* Social icons */}
-            <div className="flex items-center justify-center gap-3 mt-1">
+            <div className="flex items-center justify-center gap-2 mt-1">
               {SOCIAL_LINKS.map(link => (
                 <a
                   key={link.platform}
@@ -54,7 +63,7 @@ export function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   className={cn(
-                    'w-8 h-8 rounded-chip flex items-center justify-center',
+                    'w-8 h-8 flex items-center justify-center',
                     'bg-brand-charcoal-card border border-brand-charcoal-border',
                     'text-brand-cream-dim/60',
                     'hover:border-brand-orange/40 hover:text-brand-orange',
@@ -70,25 +79,22 @@ export function Footer() {
           </div>
 
           {/* — Col 2: Nav — */}
-          <div className="flex flex-col items-center text-center gap-3">
+          <div className="flex flex-col items-center text-center gap-3 py-10 md:py-0 md:px-8">
             <p className="font-mono text-xs tracking-widest text-brand-orange uppercase mb-1">
-              Quick Links
+              ◆ Quick Links
             </p>
             <nav aria-label="Footer navigation">
               <ul className="flex flex-col items-center gap-2" role="list">
-                {[
-                  { label: 'Home', href: '#home' },
-                  ...NAV_LINKS,
-                ].map(({ label, href }) => (
+                {[{ label: 'Home', href: '#home' }, ...NAV_LINKS].map(({ label, href }) => (
                   <li key={href}>
                     <a
                       href={href}
-                      className="font-body text-sm text-brand-cream-dim
+                      className="font-mono text-xs tracking-wider uppercase text-brand-cream-dim
                                  hover:text-brand-cream
                                  inline-flex items-center gap-1.5
                                  transition-all duration-150
                                  focus-visible:outline-none focus-visible:ring-2
-                                 focus-visible:ring-brand-orange rounded-sm"
+                                 focus-visible:ring-brand-orange"
                     >
                       {label}
                     </a>
@@ -99,9 +105,9 @@ export function Footer() {
           </div>
 
           {/* — Col 3: Contact — */}
-          <div className="flex flex-col items-center text-center gap-3">
+          <div className="flex flex-col items-center text-center gap-3 pt-10 md:pt-0 md:pl-8">
             <p className="font-mono text-xs tracking-widest text-brand-orange uppercase mb-1">
-              Contact
+              ◆ Contact
             </p>
             <div className="flex flex-col items-center gap-3">
               <a
@@ -110,7 +116,7 @@ export function Footer() {
                 aria-label={`Call ${SITE_CONFIG.phone}`}
               >
                 <PhoneIcon className="text-brand-orange/60 group-hover:text-brand-orange transition-colors" />
-                <span className="font-body text-sm text-brand-cream-dim
+                <span className="font-mono text-xs tracking-wider text-brand-cream-dim
                                  group-hover:text-brand-cream transition-colors">
                   {SITE_CONFIG.phone}
                 </span>
@@ -126,20 +132,19 @@ export function Footer() {
                   {SITE_CONFIG.email}
                 </span>
               </a>
-
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
 
-      {/* — Copyright strip — */}
+      {/* — Stamped copyright strip — */}
       <div className="border-t border-brand-charcoal-border">
-        <div className="max-w-5xl mx-auto px-6 md:px-12 py-5
+        <div className="max-w-5xl mx-auto px-6 md:px-12 py-4
                         flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="font-mono text-xs text-brand-cream-dim/40 tracking-wide">
-            © {year} Rollin' Munchies LLC · Tarboro, NC · All rights reserved
+          <p className="font-mono text-xs text-brand-cream-dim/30 tracking-wider">
+            © {year} Rollin&apos; Munchies LLC · Tarboro, NC
           </p>
-          <p className="font-mono text-xs text-brand-cream-dim/25 tracking-wide">
+          <p className="font-mono text-xs text-brand-cream-dim/20 tracking-widest uppercase">
             #noseatsjustgoodeats
           </p>
         </div>
@@ -166,15 +171,6 @@ function MailIcon({ className }: { className?: string }) {
       <path strokeLinecap="round" strokeLinejoin="round"
         d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"
       />
-    </svg>
-  )
-}
-
-function PinIcon({ className }: { className?: string }) {
-  return (
-    <svg className={cn('w-3.5 h-3.5', className)} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
-      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
     </svg>
   )
 }

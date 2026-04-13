@@ -1,21 +1,41 @@
 'use client'
 
+import { motion } from 'framer-motion'
 import { HOURS, LOCATIONS, RECURRING_EVENTS, SITE_CONFIG } from '@/lib/constants'
 import { cn, formatHours, isOpenNow } from '@/lib/utils'
 import type { WithClassName } from '@/types'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // FindUs.tsx
-// MORTY: Two-column layout on desktop — hours + locations left, map right.
-// Live day highlighting on hours table. Stacked on mobile.
-// No API key needed — Google Maps static embed iframe.
+// MORTY: Two-column layout — hours + locations left, map right.
+// Framer Motion scroll reveals. Live day highlighting on hours table.
+// Industrial: structural grid lines, sharp corners, data-plate aesthetics.
 // ─────────────────────────────────────────────────────────────────────────────
 
+const EASE_OUT = [0.25, 0.46, 0.45, 0.94] as const
+
+const revealLeft = {
+  hidden: { opacity: 0, x: -16 },
+  show:   { opacity: 1, x: 0, transition: { duration: 0.55, ease: EASE_OUT } },
+}
+
+const revealRight = {
+  hidden: { opacity: 0, x: 16 },
+  show:   { opacity: 1, x: 0, transition: { duration: 0.55, ease: EASE_OUT, delay: 0.1 } },
+}
+
+const revealUp = {
+  hidden: { opacity: 0, y: 16 },
+  show:   { opacity: 1, y: 0,  transition: { duration: 0.55, ease: EASE_OUT } },
+}
+
+// ─── Component ────────────────────────────────────────────────────────────────
+
 export function FindUs({ className }: WithClassName) {
-  const today = new Date().getDay() // 0 = Sunday
-  const days  = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
+  const today     = new Date().getDay()
+  const days      = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
   const todayName = days[today]
-  const openNow = isOpenNow(HOURS)
+  const openNow   = isOpenNow(HOURS)
 
   return (
     <section
@@ -26,44 +46,61 @@ export function FindUs({ className }: WithClassName) {
         className
       )}
     >
+      {/* Structural top accent */}
+      <div
+        aria-hidden="true"
+        className="absolute top-0 left-0 right-0 h-px
+                   bg-gradient-to-r from-transparent via-brand-charcoal-border to-transparent"
+      />
+
       <div className="max-w-5xl mx-auto">
 
         {/* — Section header — */}
-        <div className="mb-12">
-          <p className="font-mono text-xs tracking-widest text-brand-orange uppercase mb-3">
-            ✦ Come Find Us
+        <motion.div
+          variants={revealUp}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: '-80px' }}
+          className="mb-12"
+        >
+          <p className="font-mono text-xs tracking-widest text-brand-orange uppercase mb-3 flex items-center gap-2">
+            <span aria-hidden="true" className="text-brand-orange/50">◆</span>
+            Come Find Us
           </p>
-          <h2
-            className="font-display text-display-xl text-white leading-none"
-            style={{ fontFamily: '"Bebas Neue", Impact, sans-serif' }}
-          >
+          <h2 className="font-display text-display-xl text-white leading-none">
             Find Us
           </h2>
-          <p className="mt-3 font-body text-brand-cream-dim text-base max-w-md">
-            We move around — here's where to catch us. Follow us on Facebook for real-time location updates.
-          </p>
-        </div>
+          <div className="mt-3 flex items-center gap-3">
+            <div className="h-px w-8 bg-brand-orange/40" aria-hidden="true" />
+            <p className="font-body text-brand-cream-dim text-base max-w-md">
+              We move around. Follow us on Facebook for real-time location updates.
+            </p>
+          </div>
+        </motion.div>
 
         {/* — Main grid — */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
           {/* — Left column — */}
-          <div className="flex flex-col gap-6">
+          <motion.div
+            variants={revealLeft}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: '-60px' }}
+            className="flex flex-col gap-6"
+          >
 
             {/* Hours card */}
-            <div className="bg-brand-charcoal-card border border-brand-charcoal-border rounded-card p-6">
+            <div className="bg-brand-charcoal-card border border-brand-charcoal-border p-6">
               <div className="flex items-center justify-between mb-5">
-                <h3
-                  className="font-display text-xl text-white"
-                  style={{ fontFamily: '"Bebas Neue", Impact, sans-serif' }}
-                >
+                <h3 className="font-display text-xl text-white tracking-wide">
                   Hours
                 </h3>
-                {/* Live status pill */}
+                {/* Live status — stencil pill */}
                 <span
                   className={cn(
-                    'inline-flex items-center gap-1.5 px-3 py-1 rounded-full',
-                    'font-mono text-xs tracking-wider',
+                    'inline-flex items-center gap-1.5 px-3 py-1',
+                    'font-mono text-xs tracking-widest uppercase',
                     openNow
                       ? 'bg-green-500/10 border border-green-500/30 text-green-400'
                       : 'bg-red-500/10 border border-red-500/30 text-red-400'
@@ -77,12 +114,12 @@ export function FindUs({ className }: WithClassName) {
                     )}
                     aria-hidden="true"
                   />
-                  {openNow ? 'Open Now' : 'Closed'}
+                  {openNow ? 'Open' : 'Closed'}
                 </span>
               </div>
 
               {/* Hours table */}
-              <ul className="space-y-2" role="list" aria-label="Weekly hours">
+              <ul className="divide-y divide-brand-charcoal-border/50" role="list" aria-label="Weekly hours">
                 {HOURS.map(entry => {
                   const isToday = entry.day === todayName
                   return (
@@ -90,23 +127,23 @@ export function FindUs({ className }: WithClassName) {
                       key={entry.day}
                       className={cn(
                         'flex items-center justify-between',
-                        'px-3 py-2 rounded-chip',
+                        'px-3 py-2.5',
                         'transition-colors duration-150',
                         isToday
-                          ? 'bg-brand-orange/10 border border-brand-orange/20'
-                          : 'border border-transparent'
+                          ? 'bg-brand-orange/8 border-l-2 border-l-brand-orange -mx-3 px-3'
+                          : ''
                       )}
                     >
                       <span
                         className={cn(
-                          'font-body text-sm font-medium',
+                          'font-mono text-xs tracking-wider uppercase',
                           isToday ? 'text-brand-orange' : 'text-brand-cream-dim'
                         )}
                       >
                         {isToday && (
-                          <span className="font-mono text-xs mr-1.5 opacity-70">→</span>
+                          <span className="mr-2 opacity-70" aria-hidden="true">→</span>
                         )}
-                        {entry.day}
+                        {entry.day.slice(0, 3)}
                       </span>
                       <span
                         className={cn(
@@ -119,7 +156,7 @@ export function FindUs({ className }: WithClassName) {
                         )}
                       >
                         {entry.closed
-                          ? 'Closed'
+                          ? '— Closed —'
                           : `${formatHours(entry.open!)} – ${formatHours(entry.close!)}`
                         }
                       </span>
@@ -131,33 +168,31 @@ export function FindUs({ className }: WithClassName) {
 
             {/* Location cards */}
             <div className="flex flex-col gap-3">
-              <h3
-                className="font-display text-xl text-white"
-                style={{ fontFamily: '"Bebas Neue", Impact, sans-serif' }}
-              >
+              <h3 className="font-display text-xl text-white tracking-wide">
                 Locations
               </h3>
               {LOCATIONS.map(loc => (
-                <a
+                <motion.a
                   key={loc.id}
                   href={`https://maps.google.com/?q=${encodeURIComponent(loc.address)}`}
                   target="_blank"
                   rel="noopener noreferrer"
+                  whileHover={{ x: 3, transition: { duration: 0.15, ease: 'easeOut' } }}
                   className={cn(
                     'group flex items-start gap-4',
-                    'bg-brand-charcoal-card border rounded-card p-4',
-                    'hover:border-brand-orange/30 transition-all duration-200',
+                    'bg-brand-charcoal-card border p-4',
+                    'transition-colors duration-200',
                     loc.isPrimary
-                      ? 'border-brand-orange/20'
-                      : 'border-brand-charcoal-border'
+                      ? 'border-brand-orange/25 hover:border-brand-orange/50'
+                      : 'border-brand-charcoal-border hover:border-brand-charcoal-border/80'
                   )}
                   aria-label={`Get directions to ${loc.label}`}
                 >
                   <div
                     className={cn(
-                      'flex-shrink-0 w-9 h-9 rounded-chip flex items-center justify-center mt-0.5',
+                      'flex-shrink-0 w-8 h-8 flex items-center justify-center mt-0.5',
                       loc.isPrimary
-                        ? 'bg-brand-orange/15 text-brand-orange'
+                        ? 'bg-brand-orange/15 text-brand-orange border border-brand-orange/30'
                         : 'bg-brand-charcoal border border-brand-charcoal-border text-brand-cream-dim'
                     )}
                     aria-hidden="true"
@@ -166,12 +201,12 @@ export function FindUs({ className }: WithClassName) {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-0.5">
-                      <p className="font-body text-sm font-semibold text-brand-cream">
+                      <p className="font-mono text-xs font-semibold text-brand-cream tracking-wider uppercase">
                         {loc.label}
                       </p>
                       {loc.isPrimary && (
-                        <span className="font-mono text-xs text-brand-orange/70 tracking-wide">
-                          Primary
+                        <span className="font-mono text-xs text-brand-orange/70 tracking-widest">
+                          PRIMARY
                         </span>
                       )}
                     </div>
@@ -185,26 +220,23 @@ export function FindUs({ className }: WithClassName) {
                   <ExternalLinkIcon
                     className="flex-shrink-0 text-brand-cream-dim/30 group-hover:text-brand-orange/60 transition-colors mt-1"
                   />
-                </a>
+                </motion.a>
               ))}
             </div>
 
-            {/* Wild Wednesdays event card */}
+            {/* Wild Wednesdays */}
             {RECURRING_EVENTS.map(event => (
               <div
                 key={event.id}
-                className="bg-brand-orange/5 border border-brand-orange/20 rounded-card p-5"
+                className="bg-brand-orange/5 border border-brand-orange/20 p-5"
               >
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-lg" aria-hidden="true">🚗</span>
                   <p className="font-mono text-xs tracking-widest text-brand-orange uppercase">
-                    Recurring Event
+                    ◆ Recurring Event
                   </p>
                 </div>
-                <h4
-                  className="font-display text-xl text-white mb-1"
-                  style={{ fontFamily: '"Bebas Neue", Impact, sans-serif' }}
-                >
+                <h4 className="font-display text-xl text-white mb-1 tracking-wide">
                   {event.name}
                 </h4>
                 <p className="font-body text-sm text-brand-cream-dim mb-2">
@@ -215,51 +247,68 @@ export function FindUs({ className }: WithClassName) {
                 </p>
               </div>
             ))}
-          </div>
+          </motion.div>
 
           {/* — Right column: Map — */}
-          <div className="flex flex-col gap-4">
-            <h3
-              className="font-display text-xl text-white"
-              style={{ fontFamily: '"Bebas Neue", Impact, sans-serif' }}
-            >
+          <motion.div
+            variants={revealRight}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: '-60px' }}
+            className="flex flex-col gap-4"
+          >
+            <h3 className="font-display text-xl text-white tracking-wide">
               Map
             </h3>
-            <div className="relative rounded-card overflow-hidden border border-brand-charcoal-border aspect-[4/3] lg:aspect-auto lg:flex-1 lg:min-h-[480px]">
-              {/* Map iframe — no API key needed for embed */}
-              <iframe
-                title="Rollin' Munchies location map"
-                src={`https://maps.google.com/maps?q=${encodeURIComponent(SITE_CONFIG.address.street + ', ' + SITE_CONFIG.address.city + ', ' + SITE_CONFIG.address.state)}&output=embed&z=15`}
-                width="100%"
-                height="100%"
-                className="absolute inset-0 w-full h-full grayscale contrast-[1.1] opacity-90"
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                aria-label="Map showing Rollin' Munchies location in Tarboro, NC"
-              />
-              {/* Overlay tint to match dark theme */}
-              <div
-                aria-hidden="true"
-                className="absolute inset-0 pointer-events-none
-                           bg-brand-orange/5 mix-blend-multiply"
-              />
+
+            {/* Map with industrial frame */}
+            <div className="relative aspect-[4/3] lg:aspect-auto lg:flex-1 lg:min-h-[480px]">
+              {/* Corner decorations — industrial frame */}
+              {(['tl','tr','bl','br'] as const).map(corner => (
+                <div
+                  key={corner}
+                  aria-hidden="true"
+                  className={cn(
+                    'absolute w-4 h-4 z-10 pointer-events-none',
+                    corner === 'tl' && 'top-0 left-0 border-t-2 border-l-2 border-brand-orange/60',
+                    corner === 'tr' && 'top-0 right-0 border-t-2 border-r-2 border-brand-orange/60',
+                    corner === 'bl' && 'bottom-0 left-0 border-b-2 border-l-2 border-brand-orange/60',
+                    corner === 'br' && 'bottom-0 right-0 border-b-2 border-r-2 border-brand-orange/60',
+                  )}
+                />
+              ))}
+              <div className="absolute inset-1 border border-brand-charcoal-border overflow-hidden">
+                <iframe
+                  title="Rollin' Munchies location map"
+                  src={`https://maps.google.com/maps?q=${encodeURIComponent(SITE_CONFIG.address.street + ', ' + SITE_CONFIG.address.city + ', ' + SITE_CONFIG.address.state)}&output=embed&z=15`}
+                  width="100%"
+                  height="100%"
+                  className="absolute inset-0 w-full h-full grayscale contrast-[1.1] opacity-90"
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  aria-label="Map showing Rollin' Munchies location in Tarboro, NC"
+                />
+                {/* Dark tint overlay */}
+                <div
+                  aria-hidden="true"
+                  className="absolute inset-0 pointer-events-none bg-brand-orange/5 mix-blend-multiply"
+                />
+              </div>
             </div>
 
             {/* Quick contact strip */}
-            <div className="bg-brand-charcoal-card border border-brand-charcoal-border rounded-card p-4">
+            <div className="bg-brand-charcoal-card border border-brand-charcoal-border p-4">
               <p className="font-mono text-xs text-brand-cream-dim/50 tracking-widest uppercase mb-3">
-                Get In Touch
+                ◆ Get In Touch
               </p>
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-3">
                 <a
                   href={`tel:${SITE_CONFIG.phone.replace(/\D/g, '')}`}
                   className="flex items-center gap-3 group"
                   aria-label={`Call ${SITE_CONFIG.phone}`}
                 >
-                  <span className="text-brand-orange" aria-hidden="true">
-                    <PhoneIcon />
-                  </span>
-                  <span className="font-body text-sm text-brand-cream group-hover:text-brand-orange transition-colors">
+                  <span className="text-brand-orange" aria-hidden="true"><PhoneIcon /></span>
+                  <span className="font-mono text-sm text-brand-cream group-hover:text-brand-orange transition-colors tracking-wide">
                     {SITE_CONFIG.phone}
                   </span>
                 </a>
@@ -268,23 +317,21 @@ export function FindUs({ className }: WithClassName) {
                   className="flex items-center gap-3 group"
                   aria-label={`Email ${SITE_CONFIG.email}`}
                 >
-                  <span className="text-brand-orange" aria-hidden="true">
-                    <MailIcon />
-                  </span>
+                  <span className="text-brand-orange" aria-hidden="true"><MailIcon /></span>
                   <span className="font-body text-sm text-brand-cream-dim group-hover:text-brand-orange transition-colors truncate">
                     {SITE_CONFIG.email}
                   </span>
                 </a>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>
   )
 }
 
-// ─── Inline Icons ─────────────────────────────────────────────────────────────
+// ─── Icons ────────────────────────────────────────────────────────────────────
 
 function PinIcon() {
   return (

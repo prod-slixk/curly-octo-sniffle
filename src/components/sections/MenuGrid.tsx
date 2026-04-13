@@ -1,16 +1,39 @@
 'use client'
 
 import { useState } from 'react'
+import { motion } from 'framer-motion'
 import { MENU_ITEMS, MENU_CATEGORIES } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import type { MenuItem, MenuCategoryId, WithClassName } from '@/types'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // MenuGrid.tsx
-// MORTY: Bento-style menu grid with category tab filter.
-// Signature items get larger cards. Heat level indicators on spicy items.
-// Staggered fade-in on card render. Mobile-first grid.
+// MORTY: True bento grid — featured items (signature + high heat) span 2 cols.
+// Framer Motion scroll reveal with stagger. Card hover lift.
+// Industrial aesthetic: sharp corners, heavy borders, structural spacing.
 // ─────────────────────────────────────────────────────────────────────────────
+
+const EASE_OUT = [0.25, 0.46, 0.45, 0.94] as const
+
+const cardContainer = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.07, delayChildren: 0.05 } },
+}
+
+const cardReveal = {
+  hidden: { opacity: 0, y: 12 },
+  show:   { opacity: 1, y: 0, transition: { duration: 0.45, ease: EASE_OUT } },
+}
+
+const sectionReveal = {
+  hidden: { opacity: 0, y: 16 },
+  show:   { opacity: 1, y: 0,  transition: { duration: 0.55, ease: EASE_OUT } },
+}
+
+// Items that get the wide bento treatment: signature + high heat
+const isFeatured = (item: MenuItem) => item.isSignature && item.heatLevel >= 2
+
+// ─── Component ────────────────────────────────────────────────────────────────
 
 export function MenuGrid({ className }: WithClassName) {
   const [activeCategory, setActiveCategory] = useState<MenuCategoryId | 'all'>('all')
@@ -28,30 +51,49 @@ export function MenuGrid({ className }: WithClassName) {
         className
       )}
     >
-      {/* — Section header — */}
+      {/* Structural top accent */}
+      <div
+        aria-hidden="true"
+        className="absolute top-0 left-0 right-0 h-px
+                   bg-gradient-to-r from-transparent via-brand-orange/30 to-transparent"
+      />
+
       <div className="max-w-5xl mx-auto">
-        <div className="mb-12">
-          <p className="font-mono text-xs tracking-widest text-brand-orange uppercase mb-3">
-            ✦ What We're Serving
+
+        {/* — Section header — */}
+        <motion.div
+          variants={sectionReveal}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: '-80px' }}
+          className="mb-12"
+        >
+          <p className="font-mono text-xs tracking-widest text-brand-orange uppercase mb-3 flex items-center gap-2">
+            <span aria-hidden="true" className="text-brand-orange/50">◆</span>
+            What We&apos;re Serving
           </p>
-          <h2
-            className="font-display text-display-xl text-white leading-none"
-            style={{ fontFamily: '"Bebas Neue", Impact, sans-serif' }}
-          >
+          <h2 className="font-display text-display-xl text-white leading-none">
             The Menu
           </h2>
-          <p className="mt-3 font-body text-brand-cream-dim text-base max-w-md">
-            Bold flavors, no frills. Everything made to order — roll up and pick your weapon.
-          </p>
-        </div>
+          {/* Industrial ruled line */}
+          <div className="mt-3 flex items-center gap-3">
+            <div className="h-px w-8 bg-brand-orange/40" aria-hidden="true" />
+            <p className="font-body text-brand-cream-dim text-base max-w-md">
+              Bold flavors, no frills. Everything made to order.
+            </p>
+          </div>
+        </motion.div>
 
         {/* — Category tabs — */}
-        <div
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true, margin: '-80px' }}
+          transition={{ duration: 0.4 }}
           className="flex flex-wrap gap-2 mb-10"
           role="tablist"
           aria-label="Menu categories"
         >
-          {/* All tab */}
           <CategoryTab
             label="All"
             emoji="🔥"
@@ -67,23 +109,40 @@ export function MenuGrid({ className }: WithClassName) {
               onClick={() => setActiveCategory(cat.id)}
             />
           ))}
-        </div>
+        </motion.div>
 
-        {/* — Bento grid — */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-fr">
-          {filtered.map((item, index) => (
-            <MenuCard
+        {/* — Bento grid — featured items span 2 cols on desktop — */}
+        <motion.div
+          key={activeCategory} // re-trigger animation on filter change
+          variants={cardContainer}
+          initial="hidden"
+          animate="show"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-fr"
+        >
+          {filtered.map((item) => (
+            <motion.div
               key={item.id}
-              item={item}
-              index={index}
-            />
+              variants={cardReveal}
+              className={cn(
+                // Featured items get wide bento treatment on desktop
+                isFeatured(item) && 'lg:col-span-2'
+              )}
+            >
+              <MenuCard item={item} />
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
         {/* — Bottom note — */}
-        <p className="mt-10 text-center font-mono text-xs text-brand-cream-dim/50 tracking-wider">
-          Menu items & availability may vary by location · Follow us on Facebook for daily specials
-        </p>
+        <motion.p
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.4, delay: 0.3 }}
+          className="mt-10 text-center font-mono text-xs text-brand-cream-dim/40 tracking-wider"
+        >
+          Menu items & availability may vary · Follow us on Facebook for daily specials
+        </motion.p>
       </div>
     </section>
   )
@@ -105,8 +164,9 @@ function CategoryTab({ label, emoji, isActive, onClick }: CategoryTabProps) {
       aria-selected={isActive}
       onClick={onClick}
       className={cn(
-        'inline-flex items-center gap-2 px-4 py-2 rounded-chip',
-        'font-body text-sm font-medium transition-all duration-200',
+        'inline-flex items-center gap-2 px-4 py-2',
+        'font-mono text-xs tracking-wider uppercase',
+        'transition-all duration-200',
         'focus-visible:outline-none focus-visible:ring-2',
         'focus-visible:ring-brand-orange focus-visible:ring-offset-2',
         'focus-visible:ring-offset-brand-charcoal-surface',
@@ -124,72 +184,56 @@ function CategoryTab({ label, emoji, isActive, onClick }: CategoryTabProps) {
 // ─── Menu Card ────────────────────────────────────────────────────────────────
 
 interface MenuCardProps {
-  item:  MenuItem
-  index: number
+  item: MenuItem
 }
 
-function MenuCard({ item, index }: MenuCardProps) {
+function MenuCard({ item }: MenuCardProps) {
   return (
-    <article
+    <motion.article
+      whileHover={{ y: -3, transition: { duration: 0.2, ease: 'easeOut' } }}
       className={cn(
-        'group relative flex flex-col',
-        'bg-brand-charcoal-card border border-brand-charcoal-border rounded-card',
+        'group relative flex flex-col h-full',
+        'bg-brand-charcoal-card border border-brand-charcoal-border',
         'p-5 overflow-hidden',
-        'hover:border-brand-orange/30 hover:shadow-card-hover',
-        'transition-all duration-300',
-        'animate-fade-up opacity-0',
-        // Staggered delay by index — max 6 steps
-        index === 0 && '[animation-delay:0ms]',
-        index === 1 && '[animation-delay:60ms]',
-        index === 2 && '[animation-delay:120ms]',
-        index === 3 && '[animation-delay:180ms]',
-        index === 4 && '[animation-delay:240ms]',
-        index >= 5  && '[animation-delay:300ms]',
-        // Signature items span 2 cols on lg
-        item.isSignature && 'lg:col-span-1',
+        'transition-shadow duration-300',
+        'hover:shadow-card-hover',
+        // Orange left-edge accent on hover via border-left
+        'hover:border-l-brand-orange/60',
       )}
-      style={{ animationFillMode: 'forwards' }}
     >
-      {/* — Hover glow edge — */}
+      {/* — Hover top glow line — */}
       <div
         aria-hidden="true"
-        className="absolute top-0 left-0 right-0 h-px
-                   bg-gradient-to-r from-transparent via-brand-orange/40 to-transparent
+        className="absolute top-0 left-0 right-0 h-[2px]
+                   bg-gradient-to-r from-brand-orange/0 via-brand-orange/50 to-brand-orange/0
                    opacity-0 group-hover:opacity-100 transition-opacity duration-300"
       />
 
       {/* — Card top row — */}
       <div className="flex items-start justify-between gap-3 mb-3">
         <div className="flex flex-wrap gap-1.5">
-          {/* Signature badge */}
           {item.isSignature && (
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-chip
+            <span className="inline-flex items-center gap-1 px-2 py-0.5
                              bg-brand-orange/15 border border-brand-orange/30
-                             font-mono text-xs text-brand-orange tracking-wide">
-              ✦ Signature
+                             font-mono text-xs text-brand-orange tracking-widest">
+              ◆ SIGNATURE
             </span>
           )}
-          {/* Popular badge */}
           {item.isPopular && !item.isSignature && (
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-chip
+            <span className="inline-flex items-center gap-1 px-2 py-0.5
                              bg-brand-charcoal border border-brand-charcoal-border
-                             font-mono text-xs text-brand-cream-dim tracking-wide">
-              Popular
+                             font-mono text-xs text-brand-cream-dim tracking-widest">
+              POPULAR
             </span>
           )}
         </div>
 
-        {/* Heat indicator */}
-        {item.heatLevel > 0 && (
-          <HeatIndicator level={item.heatLevel} />
-        )}
+        {item.heatLevel > 0 && <HeatIndicator level={item.heatLevel} />}
       </div>
 
       {/* — Item name — */}
-      <h3
-        className="font-display text-2xl text-white leading-tight mb-2 group-hover:text-brand-orange transition-colors duration-200"
-        style={{ fontFamily: '"Bebas Neue", Impact, sans-serif' }}
-      >
+      <h3 className="font-display text-2xl text-white leading-tight mb-2
+                     group-hover:text-brand-orange transition-colors duration-200">
         {item.name}
       </h3>
 
@@ -201,7 +245,7 @@ function MenuCard({ item, index }: MenuCardProps) {
       {/* — Addons — */}
       {item.addons && item.addons.length > 0 && (
         <div className="mt-4 pt-4 border-t border-brand-charcoal-border">
-          <p className="font-mono text-xs text-brand-orange/70 tracking-wider uppercase mb-2">
+          <p className="font-mono text-xs text-brand-orange/70 tracking-widest uppercase mb-2">
             Add-ons
           </p>
           <div className="flex flex-wrap gap-1.5">
@@ -209,7 +253,7 @@ function MenuCard({ item, index }: MenuCardProps) {
               <span
                 key={addon}
                 className="font-mono text-xs text-brand-cream-dim/70
-                           px-2 py-0.5 rounded-chip
+                           px-2 py-0.5
                            bg-brand-charcoal border border-brand-charcoal-border"
               >
                 {addon}
@@ -219,14 +263,14 @@ function MenuCard({ item, index }: MenuCardProps) {
         </div>
       )}
 
-      {/* — Category chip — */}
-      <div className="mt-4 flex items-center justify-between">
+      {/* — Category label — */}
+      <div className="mt-4 pt-3 border-t border-brand-charcoal-border/50 flex items-center justify-between">
         <span className="font-mono text-xs text-brand-cream-dim/40 tracking-widest uppercase">
           {MENU_CATEGORIES.find(c => c.id === item.category)?.emoji}{' '}
           {MENU_CATEGORIES.find(c => c.id === item.category)?.label}
         </span>
       </div>
-    </article>
+    </motion.article>
   )
 }
 
@@ -248,10 +292,7 @@ function HeatIndicator({ level }: HeatIndicatorProps) {
       {[1, 2, 3].map(i => (
         <span
           key={i}
-          className={cn(
-            'text-sm transition-opacity',
-            i <= level ? 'opacity-100' : 'opacity-20'
-          )}
+          className={cn('text-sm transition-opacity', i <= level ? 'opacity-100' : 'opacity-20')}
           aria-hidden="true"
         >
           🌶

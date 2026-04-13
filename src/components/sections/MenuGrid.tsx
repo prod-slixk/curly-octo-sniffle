@@ -57,7 +57,7 @@ export function MenuGrid({ className }: WithClassName) {
       <div
         aria-hidden="true"
         className="absolute top-0 left-0 right-0 h-px
-                   bg-gradient-to-r from-transparent via-brand-orange/30 to-transparent"
+                   bg-linear-to-r from-transparent via-brand-orange/30 to-transparent"
       />
 
       <div className="max-w-6xl mx-auto">
@@ -91,25 +91,28 @@ export function MenuGrid({ className }: WithClassName) {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 0.4 }}
-          className="flex flex-wrap gap-2 mb-10"
-          role="tablist"
-          aria-label="Menu categories"
         >
-          <CategoryTab
-            label="All"
-            emoji="🔥"
-            isActive={activeCategory === 'all'}
-            onClick={() => setActiveCategory('all')}
-          />
-          {MENU_CATEGORIES.map(cat => (
+          <div
+            className="flex flex-wrap gap-2 mb-10"
+            role="tablist"
+            aria-label="Menu categories"
+          >
             <CategoryTab
-              key={cat.id}
-              label={cat.label}
-              emoji={cat.emoji}
-              isActive={activeCategory === cat.id}
-              onClick={() => setActiveCategory(cat.id)}
+              label="All"
+              emoji="🔥"
+              isActive={activeCategory === 'all'}
+              onClick={() => setActiveCategory('all')}
             />
-          ))}
+            {MENU_CATEGORIES.map(cat => (
+              <CategoryTab
+                key={cat.id}
+                label={cat.label}
+                emoji={cat.emoji}
+                isActive={activeCategory === cat.id}
+                onClick={() => setActiveCategory(cat.id)}
+              />
+            ))}
+          </div>
         </motion.div>
 
         {/* — Bento grid — */}
@@ -164,7 +167,7 @@ export function MenuGrid({ className }: WithClassName) {
             </div>
 
             {/* $1 add-ons */}
-            <div className="flex-shrink-0">
+            <div className="shrink-0">
               <p className="font-mono text-xs tracking-widest text-brand-orange uppercase mb-3">
                 + Add-Ons
               </p>
@@ -183,8 +186,8 @@ export function MenuGrid({ className }: WithClassName) {
             </div>
 
             {/* Surcharge note */}
-            <div className="flex-shrink-0 self-end md:self-start">
-              <p className="font-mono text-xs text-brand-cream-dim/40 tracking-wider leading-relaxed max-w-[220px]">
+            <div className="shrink-0 self-end md:self-start">
+              <p className="font-mono text-xs text-brand-cream-dim/40 tracking-wider leading-relaxed max-w-55">
                 Electronic payment: +$1 surcharge
               </p>
             </div>
@@ -219,7 +222,7 @@ function CategoryTab({ label, emoji, isActive, onClick }: CategoryTabProps) {
   return (
     <button
       role="tab"
-      aria-selected={isActive}
+      aria-selected={isActive ? "true" : "false"}
       onClick={onClick}
       className={cn(
         'inline-flex items-center gap-2 px-4 py-2',
@@ -260,8 +263,8 @@ function MenuCard({ item }: MenuCardProps) {
       {/* Hover top glow */}
       <div
         aria-hidden="true"
-        className="absolute top-0 left-0 right-0 h-[2px]
-                   bg-gradient-to-r from-brand-orange/0 via-brand-orange/50 to-brand-orange/0
+        className="absolute top-0 left-0 right-0 h-0.5
+                   bg-linear-to-r from-brand-orange/0 via-brand-orange/50 to-brand-orange/0
                    opacity-0 group-hover:opacity-100 transition-opacity duration-300"
       />
 
@@ -351,8 +354,8 @@ function WangzCard({ item }: MenuCardProps) {
       {/* Hover top glow */}
       <div
         aria-hidden="true"
-        className="absolute top-0 left-0 right-0 h-[2px]
-                   bg-gradient-to-r from-brand-orange/0 via-brand-orange/60 to-brand-orange/0
+        className="absolute top-0 left-0 right-0 h-0.5
+                   bg-linear-to-r from-brand-orange/0 via-brand-orange/60 to-brand-orange/0
                    opacity-0 group-hover:opacity-100 transition-opacity duration-300"
       />
 
@@ -374,7 +377,7 @@ function WangzCard({ item }: MenuCardProps) {
             {item.description}
           </p>
         </div>
-        <div className="flex-shrink-0 text-right">
+        <div className="shrink-0 text-right">
           <span className="font-display text-4xl text-brand-orange leading-none">
             ${item.price}
           </span>

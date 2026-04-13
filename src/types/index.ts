@@ -46,7 +46,7 @@ export interface LocationEntry {
 
 // ─── Menu ─────────────────────────────────────────────────────────────────────
 
-export type MenuCategoryId = 'burgers' | 'dogs' | 'sides'
+export type MenuCategoryId = 'burgers' | 'dogs' | 'wangz' | 'sides'
 
 export interface MenuCategory {
   id:          MenuCategoryId
@@ -60,10 +60,12 @@ export interface MenuItem {
   name:        string
   category:    MenuCategoryId
   description: string
+  price:       number            // display price in dollars
   isSignature: boolean
   isPopular:   boolean
   heatLevel:   0 | 1 | 2 | 3   // 0 = mild, 3 = hot
   addons?:     string[]
+  flavors?:    string[]          // wangz sauce options
   tags:        string[]
 }
 

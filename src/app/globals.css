@@ -1,6 +1,28 @@
 @import "tailwindcss";
 
 /* ─────────────────────────────────────────────────────────────────────────────
+   Custom Fonts — local @font-face declarations
+   Abstract Groovy : hero / logo display
+   Soul Wave Demo  : section headers, nav, headings
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@font-face {
+  font-family: 'AbstractGroovy';
+  src: url('/fonts/aAbstractGroovy.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'SoulWave';
+  src: url('/fonts/SoulWave-Demo.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
    Design Tokens — Tailwind v4 @theme
    All tokens auto-register as utilities via their namespace prefix.
    ───────────────────────────────────────────────────────────────────────────── */
@@ -48,6 +70,19 @@
 @utility text-display-md {
   font-size: clamp(1.75rem, 3vw, 2.5rem);
   line-height: 1;
+}
+
+/* Font family utilities */
+@utility font-display {
+  font-family: 'AbstractGroovy', var(--font-bebas-neue), "Bebas Neue", Impact, sans-serif;
+}
+
+@utility font-heading {
+  font-family: 'SoulWave', var(--font-bebas-neue), "Bebas Neue", Impact, sans-serif;
+}
+
+@utility font-body {
+  font-family: var(--font-inter), system-ui, sans-serif;
 }
 
 /* Noise texture overlay — grain for industrial depth */
@@ -121,9 +156,14 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Use the Next.js loaded font variable — fixes the bug */
+  /* ── Display (logo, hero h1) — Abstract Groovy with Bebas Neue fallback ── */
   h1, .font-display {
-    font-family: var(--font-bebas-neue), "Bebas Neue", Impact, sans-serif;
+    font-family: 'AbstractGroovy', var(--font-bebas-neue), "Bebas Neue", Impact, sans-serif;
+  }
+
+  /* ── Headings (h2, h3, nav, section labels) — Soul Wave ── */
+  h2, h3, .font-heading {
+    font-family: 'SoulWave', var(--font-bebas-neue), "Bebas Neue", Impact, sans-serif;
   }
 
   .font-body {

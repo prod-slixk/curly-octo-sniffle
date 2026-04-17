@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { HOURS, LOCATIONS, RECURRING_EVENTS, SITE_CONFIG } from '@/lib/constants'
-import { cn, formatHours, isOpenNow } from '@/lib/utils'
+import { cn, formatHours, isOpenNow, getNextOpenTime } from '@/lib/utils'
 import type { WithClassName } from '@/types'
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -36,6 +36,7 @@ export function FindUs({ className }: WithClassName) {
   const days      = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
   const todayName = days[today]
   const openNow   = isOpenNow(HOURS)
+  const nextOpen  = openNow ? null : getNextOpenTime(HOURS)
 
   return (
     <section
@@ -99,22 +100,37 @@ export function FindUs({ className }: WithClassName) {
                 {/* Live status — stencil pill */}
                 <span
                   className={cn(
-                    'inline-flex items-center gap-1.5 px-3 py-1',
-                    'font-mono text-xs tracking-widest uppercase',
+                    'inline-flex flex-col items-end gap-0.5 px-3 py-1.5',
+                    'border',
                     openNow
-                      ? 'bg-green-500/10 border border-green-500/30 text-green-400'
-                      : 'bg-red-500/10 border border-red-500/30 text-red-400'
+                      ? 'bg-green-500/10 border-green-500/30'
+                      : 'bg-red-500/10 border-red-500/30'
                   )}
                   role="status"
                 >
+                  {/* Row 1: dot + status word */}
                   <span
                     className={cn(
-                      'w-1.5 h-1.5 rounded-full',
-                      openNow ? 'bg-green-400 animate-pulse' : 'bg-red-400'
+                      'inline-flex items-center gap-1.5',
+                      'font-mono text-xs tracking-widest uppercase',
+                      openNow ? 'text-green-400' : 'text-red-400'
                     )}
-                    aria-hidden="true"
-                  />
-                  {openNow ? 'Open' : 'Closed'}
+                  >
+                    <span
+                      className={cn(
+                        'w-1.5 h-1.5 rounded-full flex-shrink-0',
+                        openNow ? 'bg-green-400 animate-pulse' : 'bg-red-400'
+                      )}
+                      aria-hidden="true"
+                    />
+                    {openNow ? 'Open Now' : 'Closed'}
+                  </span>
+                  {/* Row 2: next open time (only when closed) */}
+                  {!openNow && nextOpen && (
+                    <span className="font-mono text-[10px] tracking-wide text-red-400/60 normal-case">
+                      Opens {nextOpen.label} · {nextOpen.time}
+                    </span>
+                  )}
                 </span>
               </div>
 

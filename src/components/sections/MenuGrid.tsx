@@ -121,6 +121,7 @@ export function MenuGrid({ className }: WithClassName) {
               emoji="🔥"
               isActive={activeCategory === 'all'}
               onClick={() => setActiveCategory('all')}
+              count={MENU_ITEMS.length}
             />
             {MENU_CATEGORIES.map(cat => (
               <CategoryTab
@@ -129,6 +130,7 @@ export function MenuGrid({ className }: WithClassName) {
                 emoji={cat.emoji}
                 isActive={activeCategory === cat.id}
                 onClick={() => setActiveCategory(cat.id)}
+                count={MENU_ITEMS.filter(i => i.category === cat.id).length}
               />
             ))}
           </div>
@@ -235,13 +237,15 @@ interface CategoryTabProps {
   emoji:    string
   isActive: boolean
   onClick:  () => void
+  count?:   number
 }
 
-function CategoryTab({ label, emoji, isActive, onClick }: CategoryTabProps) {
+function CategoryTab({ label, emoji, isActive, onClick, count }: CategoryTabProps) {
   return (
     <button
       role="tab"
       aria-selected={isActive ? "true" : "false"}
+      aria-label={count !== undefined ? `${label} — ${count} items` : label}
       onClick={onClick}
       className={cn(
         'inline-flex items-center gap-2 px-4 py-2',
@@ -257,6 +261,22 @@ function CategoryTab({ label, emoji, isActive, onClick }: CategoryTabProps) {
     >
       <span aria-hidden="true">{emoji}</span>
       {label}
+      {count !== undefined && (
+        <span
+          aria-hidden="true"
+          className={cn(
+            'inline-flex items-center justify-center',
+            'min-w-[18px] h-[18px] px-1',
+            'font-mono text-[10px] tabular-nums leading-none',
+            'transition-colors duration-200',
+            isActive
+              ? 'bg-white/15 text-white'
+              : 'bg-brand-charcoal border border-brand-charcoal-border text-brand-cream-dim/50'
+          )}
+        >
+          {count}
+        </span>
+      )}
     </button>
   )
 }

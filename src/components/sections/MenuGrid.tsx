@@ -85,6 +85,25 @@ export function MenuGrid({ className }: WithClassName) {
           </div>
         </motion.div>
 
+        {/* — Payment notice — */}
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-80px' }}
+          transition={{ duration: 0.4 }}
+          className="mb-8 flex items-center gap-3
+                     border border-brand-orange/25 bg-brand-orange/5
+                     px-4 py-2.5"
+          role="note"
+          aria-label="Payment surcharge notice"
+        >
+          <span className="text-brand-orange flex-shrink-0 text-sm" aria-hidden="true">◆</span>
+          <p className="font-mono text-xs text-brand-cream-dim tracking-wide leading-relaxed">
+            <span className="text-brand-orange font-semibold">+$1 surcharge</span>
+            {' '}on all electronic payments &mdash; cash preferred
+          </p>
+        </motion.div>
+
         {/* — Category tabs — */}
         <motion.div
           initial={{ opacity: 0 }}
@@ -185,10 +204,10 @@ export function MenuGrid({ className }: WithClassName) {
               </div>
             </div>
 
-            {/* Surcharge note */}
+            {/* Surcharge note — repeated for scanners who scroll past the top notice */}
             <div className="shrink-0 self-end md:self-start">
-              <p className="font-mono text-xs text-brand-cream-dim/40 tracking-wider leading-relaxed max-w-55">
-                Electronic payment: +$1 surcharge
+              <p className="font-mono text-xs text-brand-cream-dim/70 tracking-wider leading-relaxed max-w-55">
+                Electronic payment: <span className="text-brand-orange">+$1 surcharge</span>
               </p>
             </div>
           </div>

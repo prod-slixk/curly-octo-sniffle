@@ -76,7 +76,7 @@ export function Hero({ className }: WithClassName) {
         <div className="flex animate-ticker whitespace-nowrap will-change-transform">
           {[...Array(2)].map((_, i) => (
             <span key={i} className="flex items-center gap-8 px-8">
-              {['No Seats. Just Good Eats.', 'Wild Wednesdays @ Liftking', 'Jamaican Jack Burger', 'Hot Honey Dawg', "Rollin' Fries"].map((item) => (
+              {['No Seats. Just Good Eats.', 'Wild Wednesdays @ Liftking', 'Jamaican Jack Burger', 'Hot Honey Dawg', "Rollin' Fries", 'Electronic Payment: +$1 Fee'].map((item) => (
                 <span key={item} className="flex items-center gap-3 font-display text-sm tracking-widest text-white">
                   <span aria-hidden="true">◆</span>
                   {item.toUpperCase()}

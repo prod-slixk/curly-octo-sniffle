@@ -180,7 +180,7 @@ export function Contact({ className }: WithClassName) {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                   <FormField
                     label="Name"
-                    fieldId="FIELD-01"
+                    serial="FIELD-01"
                     required
                     id="name"
                     name="name"
@@ -193,7 +193,7 @@ export function Contact({ className }: WithClassName) {
                   />
                   <FormField
                     label="Phone"
-                    fieldId="FIELD-02"
+                    serial="FIELD-02"
                     id="phone"
                     name="phone"
                     type="tel"
@@ -208,7 +208,7 @@ export function Contact({ className }: WithClassName) {
                 <div className="mb-4">
                   <FormField
                     label="Email"
-                    fieldId="FIELD-03"
+                    serial="FIELD-03"
                     required
                     id="email"
                     name="email"
@@ -229,6 +229,7 @@ export function Contact({ className }: WithClassName) {
                     <span>
                       Message <span className="text-brand-orange" aria-hidden="true">*</span>
                     </span>
+                    {/* Decorative serial — aria-hidden, not the input id */}
                     <span className="text-brand-cream-dim/30" aria-hidden="true">FIELD-04</span>
                   </label>
                   <textarea
@@ -402,7 +403,9 @@ export function Contact({ className }: WithClassName) {
 
 interface FormFieldProps {
   label:        string
-  fieldId:      string
+  // serial: purely decorative industrial label (FIELD-01 etc.).
+  // aria-hidden — never part of the accessible name or the id/htmlFor pair.
+  serial:       string
   id:           string
   name:         string
   type:         string
@@ -415,7 +418,7 @@ interface FormFieldProps {
 }
 
 function FormField({
-  label, fieldId, id, name, type, placeholder,
+  label, serial, id, name, type, placeholder,
   value, onChange, disabled, required, autoComplete
 }: FormFieldProps) {
   return (
@@ -428,7 +431,8 @@ function FormField({
           {label}
           {required && <span className="text-brand-orange ml-1" aria-hidden="true">*</span>}
         </span>
-        <span className="text-brand-cream-dim/25" aria-hidden="true">{fieldId}</span>
+        {/* Decorative serial — aria-hidden, not the input id */}
+        <span className="text-brand-cream-dim/25" aria-hidden="true">{serial}</span>
       </label>
       <input
         id={id}

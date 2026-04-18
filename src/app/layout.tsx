@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Bebas_Neue, Inter } from 'next/font/google'
+import ReactDOM from 'react-dom'
 import './globals.css'
 import { SITE_CONFIG } from '@/lib/constants'
 
@@ -32,30 +33,15 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  // ReactDOM.preload() (React 19) hoists <link rel="preload"> into <head>
+  // without a manual <head> node — avoids the hydration mismatch that an
+  // explicit <head> tag causes in Next.js App Router. Correct MIME type for
+  // TTF is 'font/ttf', not 'font/truetype'.
+  ReactDOM.preload('/fonts/aAbstractGroovy.ttf', { as: 'font', type: 'font/ttf', crossOrigin: 'anonymous' })
+  ReactDOM.preload('/fonts/SoulWave-Demo.ttf',   { as: 'font', type: 'font/ttf', crossOrigin: 'anonymous' })
+
   return (
     <html lang="en" className={`${bebasNeue.variable} ${inter.variable}`}>
-      {/*
-        Preload local fonts before CSS is parsed so they have the best chance
-        of arriving within the 100ms font-display:optional block window.
-        AbstractGroovy (18 KB) is used in the ticker and hero headline — above the fold.
-        SoulWave (68 KB) is used in section headings — critical for visual stability.
-      */}
-      <head>
-        <link
-          rel="preload"
-          href="/fonts/aAbstractGroovy.ttf"
-          as="font"
-          type="font/truetype"
-          crossOrigin="anonymous"
-        />
-        <link
-          rel="preload"
-          href="/fonts/SoulWave-Demo.ttf"
-          as="font"
-          type="font/truetype"
-          crossOrigin="anonymous"
-        />
-      </head>
       <body>{children}</body>
     </html>
   )

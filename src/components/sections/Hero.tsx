@@ -234,10 +234,32 @@ export function Hero({ className }: WithClassName) {
           and fries that hit different. Roll up and eat.
         </motion.p>
 
+        {/* Stats — tight credibility strip, primes the CTA above it */}
+        <motion.div
+          variants={fadeUp}
+          className="mt-10 flex items-stretch justify-center gap-0
+                     border border-brand-charcoal-border"
+        >
+          {HERO_STATS.map(({ value, label }, i) => (
+            <div
+              key={label}
+              className={cn(
+                'text-center px-7 py-3',
+                i < HERO_STATS.length - 1 && 'border-r border-brand-charcoal-border'
+              )}
+            >
+              <p className="font-display text-display-md text-brand-orange">{value}</p>
+              <p className="font-mono text-xs text-brand-cream-dim tracking-widest uppercase mt-0.5">
+                {label}
+              </p>
+            </div>
+          ))}
+        </motion.div>
+
         {/* CTA buttons */}
         <motion.div
           variants={fadeUp}
-          className="mt-10 flex flex-col sm:flex-row items-center gap-3"
+          className="mt-6 flex flex-col sm:flex-row items-center gap-3"
         >
           <a
             href="#menu"
@@ -272,28 +294,6 @@ export function Hero({ className }: WithClassName) {
             <PinIcon aria-hidden="true" />
             Find Us
           </a>
-        </motion.div>
-
-        {/* Stats — data plate style */}
-        <motion.div
-          variants={fadeUp}
-          className="mt-20 flex flex-wrap items-stretch justify-center gap-0
-                     border border-brand-charcoal-border"
-        >
-          {HERO_STATS.map(({ value, label }, i) => (
-            <div
-              key={label}
-              className={cn(
-                'text-center px-10 py-5',
-                i < HERO_STATS.length - 1 && 'border-r border-brand-charcoal-border'
-              )}
-            >
-              <p className="font-display text-display-md text-brand-orange">{value}</p>
-              <p className="font-mono text-xs text-brand-cream-dim tracking-widest uppercase mt-1">
-                {label}
-              </p>
-            </div>
-          ))}
         </motion.div>
       </motion.div>
 

@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import { Bebas_Neue, Inter } from 'next/font/google'
-import ReactDOM from 'react-dom'
 import './globals.css'
 import { SITE_CONFIG } from '@/lib/constants'
 
@@ -33,16 +32,18 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  // ReactDOM.preload() (React 19) hoists <link rel="preload"> into <head>
-  // without a manual <head> node — avoids the hydration mismatch that an
-  // explicit <head> tag causes in Next.js App Router. Correct MIME type for
-  // TTF is 'font/ttf', not 'font/truetype'.
-  ReactDOM.preload('/fonts/aAbstractGroovy.ttf', { as: 'font', type: 'font/ttf', crossOrigin: 'anonymous' })
-  ReactDOM.preload('/fonts/SoulWave-Demo.ttf',   { as: 'font', type: 'font/ttf', crossOrigin: 'anonymous' })
-
+  // Font preloading is handled by next/font (Bebas Neue) and by the CSS
+  // font-display:optional block window for local fonts (AbstractGroovy, SoulWave).
+  // Manual ReactDOM.preload() calls were removed — they inject <link> nodes
+  // into the React resource tree during the server pass, then reconcile
+  // differently on the client, which triggers hydration error #418.
+  //
+  // data-gramm / data-gramm_editor: suppress Grammarly DOM attribute injection
+  // on <body>. Grammarly adds data-gr-* attributes after hydration which React
+  // then detects as a server/client mismatch — another #418 source.
   return (
     <html lang="en" className={`${bebasNeue.variable} ${inter.variable}`}>
-      <body>{children}</body>
+      <body data-gramm="false" data-gramm_editor="false">{children}</body>
     </html>
   )
 }

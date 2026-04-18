@@ -46,7 +46,7 @@ export function Contact({ className }: WithClassName) {
     setForm(prev => ({ ...prev, [name]: value }))
   }
 
-  async function handleSubmit(e: React.MouseEvent<HTMLButtonElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
 
     if (!form.name.trim() || !form.email.trim() || !form.message.trim()) {
@@ -166,7 +166,17 @@ export function Contact({ className }: WithClassName) {
               </motion.div>
             ) : (
               // ─── Form — idle / loading / error ───────────────────────────
-              <div className="bg-brand-charcoal-card border border-brand-charcoal-border p-6 md:p-8">
+              // <form> wrapper is required for correct a11y semantics: without it,
+              // axe/Chrome DevTools flag every control (input, textarea, button)
+              // as "form control not inside a landmark region" — the source of
+              // the 9 label/field violations. noValidate hands validation to the
+              // handleSubmit logic so we control error messaging ourselves.
+              <form
+                onSubmit={handleSubmit}
+                noValidate
+                aria-label="Contact form"
+                className="bg-brand-charcoal-card border border-brand-charcoal-border p-6 md:p-8"
+              >
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                   <FormField
                     label="Name"
@@ -258,7 +268,7 @@ export function Contact({ className }: WithClassName) {
 
                 {/* Submit */}
                 <button
-                  onClick={handleSubmit}
+                  type="submit"
                   disabled={isLoading}
                   className={cn(
                     'w-full flex items-center justify-center gap-2',
@@ -284,7 +294,7 @@ export function Contact({ className }: WithClassName) {
                     'Send Message →'
                   )}
                 </button>
-              </div>
+              </form>
             )}
           </motion.div>
 

@@ -35,14 +35,28 @@ const isFeatured = (item: MenuItem): boolean =>
   (item.isSignature && item.heatLevel >= 2) ||
   (item.category === 'wangz' && item.isSignature)
 
+// ─── Item Groups ──────────────────────────────────────────────────────────────
+// Pre-computed once at module scope — O(n) at import time, O(1) per render.
+// Avoids re-filtering MENU_ITEMS on every state update or parent re-render.
+// Inactive categories are never in the DOM: key={activeCategory} on the grid
+// fully unmounts the previous tab's cards before mounting the new set.
+
+const ITEMS_BY_CATEGORY = new Map<MenuCategoryId | 'all', readonly MenuItem[]>([
+  ['all', MENU_ITEMS],
+  ...MENU_CATEGORIES.map(cat => [
+    cat.id,
+    MENU_ITEMS.filter(i => i.category === cat.id),
+  ] as [MenuCategoryId, readonly MenuItem[]]),
+])
+
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export function MenuGrid({ className }: WithClassName) {
-  const [activeCategory, setActiveCategory] = useState<MenuCategoryId | 'all'>('all')
+  // Default to 'burgers' — 18 items on initial render instead of all 37.
+  // Switching to 'all' is an explicit user choice; inactive tabs are not mounted.
+  const [activeCategory, setActiveCategory] = useState<MenuCategoryId | 'all'>('burgers')
 
-  const filtered = activeCategory === 'all'
-    ? MENU_ITEMS
-    : MENU_ITEMS.filter(item => item.category === activeCategory)
+  const items = ITEMS_BY_CATEGORY.get(activeCategory) ?? MENU_ITEMS
 
   return (
     <section
@@ -137,14 +151,17 @@ export function MenuGrid({ className }: WithClassName) {
         </motion.div>
 
         {/* — Bento grid — */}
+        {/* role="tabpanel" pairs with the tablist above for correct a11y tree */}
         <motion.div
           key={activeCategory}
+          role="tabpanel"
+          aria-label={`${activeCategory === 'all' ? 'All items' : MENU_CATEGORIES.find(c => c.id === activeCategory)?.label ?? activeCategory} menu`}
           variants={cardContainer}
           initial="hidden"
           animate="show"
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-fr"
         >
-          {filtered.map((item) => (
+          {items.map((item) => (
             <motion.div
               key={item.id}
               variants={cardReveal}

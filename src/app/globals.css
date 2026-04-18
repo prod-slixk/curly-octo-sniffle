@@ -6,12 +6,17 @@
    Soul Wave Demo  : section headers, nav, headings
    ───────────────────────────────────────────────────────────────────────────── */
 
+/* font-display: optional — 100ms block window, zero swap period.
+   If the font arrives within 100ms (aided by <link rel="preload"> in layout.tsx)
+   it renders without any visible shift. If it misses the window the fallback
+   is locked in for the session — no late CLS. This is the correct strategy
+   for above-the-fold display fonts where layout stability > guaranteed custom font. */
 @font-face {
   font-family: 'AbstractGroovy';
   src: url('/fonts/aAbstractGroovy.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
-  font-display: swap;
+  font-display: optional;
 }
 
 @font-face {
@@ -19,7 +24,7 @@
   src: url('/fonts/SoulWave-Demo.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
-  font-display: swap;
+  font-display: optional;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────

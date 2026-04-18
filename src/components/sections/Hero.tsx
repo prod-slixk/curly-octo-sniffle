@@ -68,8 +68,11 @@ export function Hero({ className }: WithClassName) {
       />
 
       {/* — Ticker tape — */}
+      {/* min-h-[40px]: hard height reservation — locks the container so no font
+          event (swap, FOUT, reflow) can change its height and shift content below.
+          This is the CLS backstop independent of font-display strategy. */}
       <div
-        className="relative z-20 w-full overflow-hidden
+        className="relative z-20 w-full overflow-hidden min-h-[40px]
                    bg-brand-orange py-2 border-b-2 border-brand-orange-dark"
         aria-label="Announcement"
       >

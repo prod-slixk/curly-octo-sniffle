@@ -70,7 +70,7 @@ export function Footer() {
                     'transition-all duration-200',
                     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange'
                   )}
-                  aria-label={`${link.platform} — @${link.handle}`}
+                  aria-label={`Follow us on ${link.platform}`}
                 >
                   <SocialIcon platform={link.icon} />
                 </a>

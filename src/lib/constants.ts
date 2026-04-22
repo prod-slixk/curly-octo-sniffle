@@ -1,8 +1,3 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// constants.ts — Single source of truth for all Rollin' Munchies business data
-// TERRY: Never duplicate this data in components. Import from here always.
-// ─────────────────────────────────────────────────────────────────────────────
-
 import type {
   MenuItem,
   MenuCategory,
@@ -12,7 +7,7 @@ import type {
   SiteConfig,
 } from '@/types'
 
-// ─── Site Config ─────────────────────────────────────────────────────────────
+// --- Site Config ---
 
 export const SITE_CONFIG: SiteConfig = {
   name:        "Rollin' Munchies",
@@ -28,7 +23,7 @@ export const SITE_CONFIG: SiteConfig = {
   },
 }
 
-// ─── Hours ────────────────────────────────────────────────────────────────────
+// --- Hours ---
 
 export const HOURS: HoursEntry[] = [
   { day: 'Monday',    open: null,     close: null,    closed: true  },
@@ -40,14 +35,14 @@ export const HOURS: HoursEntry[] = [
   { day: 'Sunday',    open: null,     close: null,    closed: true  },
 ]
 
-// ─── Locations ────────────────────────────────────────────────────────────────
+// --- Locations ---
 
 export const LOCATIONS: LocationEntry[] = [
   {
     id:          'main',
     label:       'Main Spot',
     address:     '1528 N Main St, Tarboro, NC 27886',
-    description: 'Our primary location. Pull up Tue–Sat.',
+    description: 'Our primary location. Pull up Tue-Sat.',
     coordinates: { lat: 35.9032, lng: -77.5327 },
     isPrimary:   true,
   },
@@ -61,15 +56,15 @@ export const LOCATIONS: LocationEntry[] = [
   },
   {
     id:          'dunkin',
-    label:       'Behind Tarboro Dunkin\'',
+    label:       "Behind Tarboro Dunkin'",
     address:     'Western Blvd, Tarboro, NC',
-    description: 'Follow the smoke — we\'re behind Dunkin\'. Until sold out.',
+    description: "Follow the smoke -- we're behind Dunkin'. Until sold out.",
     coordinates: { lat: 35.8975, lng: -77.5441 },
     isPrimary:   false,
   },
 ]
 
-// ─── Events ───────────────────────────────────────────────────────────────────
+// --- Events ---
 
 export const RECURRING_EVENTS = [
   {
@@ -77,16 +72,16 @@ export const RECURRING_EVENTS = [
     name:        'Wild Wednesdays Car Show',
     venue:       'Liftking, Tarboro NC',
     description: 'Every Wednesday. Real cars, real food. Come hungry.',
-    dayOfWeek:   3, // Wednesday
+    dayOfWeek:   3,
     recurring:   true,
   },
 ]
 
-// ─── Menu ─────────────────────────────────────────────────────────────────────
+// --- Menu ---
 
 export const MENU_ITEMS: MenuItem[] = [
 
-  // ── Burgers ──────────────────────────────────────────────────────────────────
+  // Burgers
   {
     id:          'hamburger',
     name:        'Hamburger',
@@ -256,7 +251,7 @@ export const MENU_ITEMS: MenuItem[] = [
     id:          'bacon-burger-dawg',
     name:        'Bacon Burger Dawg',
     category:    'burgers',
-    description: 'Cheeseburger + Nathan\'s Hot Dawg together. Mustard, Ketchup, Chili & Onions.',
+    description: "Cheeseburger + Nathan's Hot Dawg together. Mustard, Ketchup, Chili & Onions.",
     price:       12,
     isSignature: true,
     isPopular:   true,
@@ -267,7 +262,7 @@ export const MENU_ITEMS: MenuItem[] = [
     id:          'tims-special',
     name:        "Tim's Special",
     category:    'burgers',
-    description: 'Cheeseburger with Mustard, Ketchup & Chili — plus 2 Wangz with your choice of Flava & Fries.',
+    description: 'Cheeseburger with Mustard, Ketchup & Chili -- plus 2 Wangz with your choice of Flava & Fries.',
     price:       13,
     isSignature: true,
     isPopular:   true,
@@ -286,7 +281,7 @@ export const MENU_ITEMS: MenuItem[] = [
     tags:        ['classic'],
   },
 
-  // ── Hot Dawg's ────────────────────────────────────────────────────────────────
+  // Hot Dawgs
   {
     id:          'nathans-hot-dawg',
     name:        "Nathan's Hot Dawg",
@@ -409,7 +404,7 @@ export const MENU_ITEMS: MenuItem[] = [
     tags:        ['spicy'],
   },
 
-  // ── Wangz ─────────────────────────────────────────────────────────────────────
+  // Wangz
   {
     id:          'wangz-5',
     name:        '5 Plain Wangz',
@@ -428,13 +423,13 @@ export const MENU_ITEMS: MenuItem[] = [
       'Spicy Dry Ranch', 'Garlic Parmesan', 'Buffalo Lemon Peppa',
       'Sweet Chili', 'Honey Mustard', 'Mango Habanero',
     ],
-    tags:        ['bestseller'],
+    tags: ['bestseller'],
   },
   {
     id:          'wangz-10',
     name:        '10 Plain Wangz',
     category:    'wangz',
-    description: 'The move. Pick any flava — or mix it up. Add sauce for $1.',
+    description: 'The move. Pick any flava -- or mix it up. Add sauce for $1.',
     price:       15,
     isSignature: true,
     isPopular:   true,
@@ -448,10 +443,10 @@ export const MENU_ITEMS: MenuItem[] = [
       'Spicy Dry Ranch', 'Garlic Parmesan', 'Buffalo Lemon Peppa',
       'Sweet Chili', 'Honey Mustard', 'Mango Habanero',
     ],
-    tags:        ['bestseller', 'shareable'],
+    tags: ['bestseller', 'shareable'],
   },
 
-  // ── Specialty Fries ───────────────────────────────────────────────────────────
+  // Specialty Fries
   {
     id:          'regular-fries',
     name:        'Regular Fries',
@@ -521,14 +516,13 @@ export const MENU_ITEMS: MenuItem[] = [
 ]
 
 export const MENU_CATEGORIES: MenuCategory[] = [
-  { id: 'burgers', label: 'Burgers',        emoji: '🍔', description: 'Smashed, stacked, and unapologetic' },
-  { id: 'dogs',    label: 'Hot Dawg\'s',    emoji: '🌭', description: 'All-beef. All flavor.' },
-  { id: 'wangz',   label: 'Wangz',          emoji: '🍗', description: '21 flavas. You pick the heat.' },
-  { id: 'sides',   label: 'Specialty Fries', emoji: '🍟', description: 'The supporting cast that steals the show' },
+  { id: 'burgers', label: 'Burgers',         emoji: '\u{1F354}', description: 'Smashed, stacked, and unapologetic' },
+  { id: 'dogs',    label: "Hot Dawg's",      emoji: '\u{1F32D}', description: 'All-beef. All flavor.'             },
+  { id: 'wangz',   label: 'Wangz',           emoji: '\u{1F357}', description: '21 flavas. You pick the heat.'    },
+  { id: 'sides',   label: 'Specialty Fries', emoji: '\u{1F35F}', description: 'The supporting cast that steals the show' },
 ]
 
-// ─── Condiments ───────────────────────────────────────────────────────────────
-// Used in the menu section footer note.
+// --- Condiments ---
 
 export const CONDIMENTS_FREE = [
   'Ketchup', 'Mayo', 'Onions', 'Jalapenos', 'Lettuce',
@@ -536,13 +530,13 @@ export const CONDIMENTS_FREE = [
 ] as const
 
 export const CONDIMENTS_EXTRAS = [
-  { name: 'Chili',         price: 1 },
+  { name: 'Chili',          price: 1 },
   { name: 'Grilled Onions', price: 1 },
-  { name: 'Extra Cheese',  price: 1 },
-  { name: 'Ranch Cup',     price: 1 },
+  { name: 'Extra Cheese',   price: 1 },
+  { name: 'Ranch Cup',      price: 1 },
 ] as const
 
-// ─── Social Links ─────────────────────────────────────────────────────────────
+// --- Social Links ---
 
 export const SOCIAL_LINKS: SocialLink[] = [
   {
@@ -559,10 +553,35 @@ export const SOCIAL_LINKS: SocialLink[] = [
   },
 ]
 
-// ─── Nav Links ────────────────────────────────────────────────────────────────
+// --- Pickup Time Slots ---
+// Aligned with operating hours: Tue-Sat 11:30 AM - 6:00 PM.
+// 'asap' is always first. Slots end at 5:30 to allow prep before close.
+
+export const PICKUP_SLOTS = [
+  { value: 'asap',  label: 'ASAP'     },
+  { value: '11:30', label: '11:30 AM' },
+  { value: '12:00', label: '12:00 PM' },
+  { value: '12:30', label: '12:30 PM' },
+  { value: '13:00', label: '1:00 PM'  },
+  { value: '13:30', label: '1:30 PM'  },
+  { value: '14:00', label: '2:00 PM'  },
+  { value: '14:30', label: '2:30 PM'  },
+  { value: '15:00', label: '3:00 PM'  },
+  { value: '15:30', label: '3:30 PM'  },
+  { value: '16:00', label: '4:00 PM'  },
+  { value: '16:30', label: '4:30 PM'  },
+  { value: '17:00', label: '5:00 PM'  },
+  { value: '17:30', label: '5:30 PM'  },
+] as const
+
+export type PickupSlotValue = typeof PICKUP_SLOTS[number]['value']
+
+// --- Nav Links ---
 
 export const NAV_LINKS = [
-  { label: 'Menu',    href: '#menu'    },
-  { label: 'Find Us', href: '#find-us' },
-  { label: 'Contact', href: '#contact' },
+  { label: 'Menu',      href: '#menu'      },
+  { label: 'Find Us',   href: '#find-us'   },
+  { label: 'Contact',   href: '#contact'   },
+  { label: 'Pre-Order', href: '/preorder'  },
+  { label: 'Catering',  href: '/catering'  },
 ] as const

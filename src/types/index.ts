@@ -1,9 +1,9 @@
-// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────────
 // types/index.ts — Shared TypeScript types across the entire project
 // MORTY + TERRY: Both layers import from here. No type duplication anywhere.
-// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────────
 
-// ─── Site ─────────────────────────────────────────────────────────────────────
+// ─── Site ─────────────────────────────────────────────────────────────────────────────
 
 export interface SiteConfig {
   name:        string
@@ -19,7 +19,7 @@ export interface SiteConfig {
   }
 }
 
-// ─── Hours ────────────────────────────────────────────────────────────────────
+// ─── Hours ──────────────────────────────────────────────────────────────────────────────
 
 export interface HoursEntry {
   day:    string
@@ -28,7 +28,7 @@ export interface HoursEntry {
   closed: boolean
 }
 
-// ─── Location ─────────────────────────────────────────────────────────────────
+// ─── Location ───────────────────────────────────────────────────────────────────────────
 
 export interface Coordinates {
   lat: number
@@ -44,7 +44,7 @@ export interface LocationEntry {
   isPrimary:   boolean
 }
 
-// ─── Menu ─────────────────────────────────────────────────────────────────────
+// ─── Menu ────────────────────────────────────────────────────────────────────────────────
 
 export type MenuCategoryId = 'burgers' | 'dogs' | 'wangz' | 'sides'
 
@@ -69,7 +69,7 @@ export interface MenuItem {
   tags:        string[]
 }
 
-// ─── Social ───────────────────────────────────────────────────────────────────
+// ─── Social ──────────────────────────────────────────────────────────────────────────────
 
 export type SocialIcon = 'facebook' | 'instagram' | 'tiktok'
 
@@ -80,7 +80,7 @@ export interface SocialLink {
   icon:     SocialIcon
 }
 
-// ─── Contact Form ─────────────────────────────────────────────────────────────
+// ─── Contact Form ───────────────────────────────────────────────────────────────────
 // TERRY: These match the Zod schema in /api/v1/contact/route.ts exactly.
 // If you change one, change both. They must stay in sync.
 
@@ -96,7 +96,60 @@ export interface ContactFormState {
   message: string | null
 }
 
-// ─── API Response Shape ───────────────────────────────────────────────────────
+// ─── Pre-Order Form ───────────────────────────────────────────────────────────────
+// TERRY: These match the Zod schema in /api/v1/preorder/route.ts exactly.
+// If you change one, change both. They must stay in sync.
+
+export interface PreOrderItem {
+  itemId:   string
+  itemName: string
+  quantity: number
+  flavor?:  string  // wangz only
+}
+
+export interface PreOrderFormData {
+  name:         string
+  phone:        string
+  pickupTime:   string
+  items:        PreOrderItem[]
+  instructions: string
+}
+
+export interface PreOrderFormState {
+  status:  'idle' | 'loading' | 'success' | 'error'
+  message: string | null
+}
+
+
+// --- Catering Inquiry Form ---
+// TERRY: These match the Zod schema in /api/v1/catering/route.ts exactly.
+// If you change one, change both. They must stay in sync.
+
+export type BudgetRange =
+  | 'under-500'
+  | '500-1000'
+  | '1000-2500'
+  | '2500-5000'
+  | '5000-plus'
+  | 'not-sure'
+
+export interface CateringInquiryFormData {
+  name:          string
+  phone:         string
+  email:         string
+  eventDate:     string   // ISO date string YYYY-MM-DD
+  headcount:     string   // kept as string for flexible input (e.g. '50-75')
+  eventLocation: string
+  budgetRange:   BudgetRange
+  notes:         string
+}
+
+export interface CateringInquiryFormState {
+  status:  'idle' | 'loading' | 'success' | 'error'
+  message: string | null
+}
+
+// ─── API Response Shape ───────────────────────────────────────────────────────────
 // TERRY: All API responses conform to this envelope. No naked returns.
 
 export interface ApiResponse<T = null> {
@@ -105,7 +158,7 @@ export interface ApiResponse<T = null> {
   error:   string | null
 }
 
-// ─── Utility ──────────────────────────────────────────────────────────────────
+// ─── Utility ──────────────────────────────────────────────────────────────────────────
 
 export type WithClassName = {
   className?: string

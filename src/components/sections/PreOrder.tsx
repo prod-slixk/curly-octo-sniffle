@@ -159,7 +159,7 @@ export function PreOrder() {
             Order Received!
           </h2>
           <p className="font-body text-brand-cream-dim mb-2">
-            Hawk's been notified. We'll have your order ready at pickup.
+            We've got your order. We'll have it ready at pickup.
           </p>
           <p className="font-mono text-sm text-brand-cream-dim/50 mb-8">
             Questions? Call us at{' '}

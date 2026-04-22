@@ -96,8 +96,8 @@ export function CateringInquiry() {
             Inquiry Received
           </h2>
           <p className="font-body text-brand-cream-dim mb-2 leading-relaxed">
-            Hawk will be in touch shortly to talk through your event.
-            We'll follow up by phone or email — usually within 24 hours.
+            We'll be in touch shortly to talk through your event.
+            Expect a follow up by phone or email — usually within 24 hours.
           </p>
           <p className="font-mono text-sm text-brand-cream-dim/50 mb-8">
             Need it faster? Call us directly at{' '}
@@ -146,8 +146,8 @@ export function CateringInquiry() {
           <div className="mt-3 flex items-center gap-3">
             <div className="h-px w-8 bg-brand-orange/40" aria-hidden="true" />
             <p className="font-body text-brand-cream-dim text-base max-w-lg leading-relaxed">
-              Bring Rollin' Munchies to your event. Fill this out and Hawk
-              will reach out personally to build your package.
+              Bring Rollin' Munchies to your event. Fill this out and
+              we'll reach out personally to build your package.
             </p>
           </div>
 
@@ -156,7 +156,7 @@ export function CateringInquiry() {
             {[
               { icon: '📍', label: 'On-site setup',     sub: 'We come to you'         },
               { icon: '🍔', label: 'Full menu available', sub: 'Custom menus too'      },
-              { icon: '📞', label: 'Direct with Hawk',   sub: 'No middleman, no BS'   },
+              { icon: '📞', label: 'Direct line',          sub: 'No middleman, no BS'   },
             ].map(item => (
               <div
                 key={item.label}
@@ -415,7 +415,7 @@ export function CateringInquiry() {
           </motion.div>
 
           <p className="text-center font-mono text-xs text-brand-cream-dim/30 leading-relaxed">
-            No commitment required. Hawk follows up personally — usually within 24 hours.
+            No commitment required. We follow up personally — usually within 24 hours.
           </p>
 
         </form>

@@ -8,7 +8,7 @@ import type { ApiResponse } from '@/types'
 // On valid submission:
 //   1. Validates + rate-limits
 //   2. Sends email via Resend to Rollinmunchiesfamily@gmail.com
-//   3. Sends SMS via Twilio to Hawk's number
+//   3. Sends SMS via Twilio to the owner's number
 // TERRY: No stack traces to client. Ever. Log server-side, return safe messages.
 // ─────────────────────────────────────────────────────────────────────────────
 

@@ -583,5 +583,4 @@ export const NAV_LINKS = [
   { label: 'Find Us',   href: '#find-us'   },
   { label: 'Contact',   href: '#contact'   },
   { label: 'Pre-Order', href: '/preorder'  },
-  { label: 'Catering',  href: '/catering'  },
 ] as const
